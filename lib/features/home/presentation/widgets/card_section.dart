@@ -1,9 +1,9 @@
 import 'package:fintech_app/app_colors.dart';
 import 'package:fintech_app/common/app_assets.dart';
 import 'package:fintech_app/common/app_dimens.dart';
+import 'package:fintech_app/common/app_formatters.dart';
 import 'package:fintech_app/common/widgets/section_title.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 class CardSection extends StatelessWidget {
   const CardSection({super.key});
@@ -94,7 +94,7 @@ class CardWidget extends StatelessWidget {
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: onSurface.withValues(alpha: 0.7)),
                     ),
                     Text(
-                      hidden ? '****' : NumberFormat.currency(locale: 'en_US', symbol: '\$').format(balance),
+                      hidden ? '****' : AppFormatters.amount(balance),
                       style: Theme.of(
                         context,
                       ).textTheme.headlineSmall?.copyWith(color: onSurface, fontWeight: FontWeight.w700),

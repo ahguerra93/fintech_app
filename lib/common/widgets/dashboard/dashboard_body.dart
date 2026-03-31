@@ -19,7 +19,7 @@ class DashboardBody extends StatelessWidget {
         items: [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.credit_card), label: 'Cards'),
-          BottomNavigationBarItem(icon: Icon(Icons.analytics_outlined), label: 'Analysis'),
+          BottomNavigationBarItem(icon: Icon(Icons.analytics_outlined), label: 'Stats'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
       ),

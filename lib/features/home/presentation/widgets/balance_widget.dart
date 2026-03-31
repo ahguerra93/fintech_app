@@ -1,12 +1,11 @@
+import 'package:fintech_app/common/app_formatters.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 class BalanceWidget extends StatelessWidget {
   const BalanceWidget({super.key, this.balance = 222852.00});
 
   final double balance;
 
-  static final _amountFormat = NumberFormat('#,##0.00', 'en_US');
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -20,7 +19,7 @@ class BalanceWidget extends StatelessWidget {
             children: [
               TextSpan(text: '\$ ', style: Theme.of(context).textTheme.titleLarge),
               TextSpan(
-                text: _amountFormat.format(balance),
+                text: AppFormatters.amount(balance),
                 style: Theme.of(context).textTheme.displaySmall?.copyWith(fontWeight: FontWeight.w700),
               ),
             ],
