@@ -1,7 +1,7 @@
 import 'package:fintech_app/app_colors.dart';
 import 'package:fintech_app/common/app_assets.dart';
 import 'package:fintech_app/common/app_dimens.dart';
-import 'package:fintech_app/common/app_formatters.dart';
+import 'package:fintech_app/common/widgets/cards/card_widget.dart';
 import 'package:fintech_app/common/widgets/section_title.dart';
 import 'package:flutter/material.dart';
 
@@ -75,32 +75,7 @@ class CardWidget extends StatelessWidget {
                     context,
                   ).textTheme.titleLarge?.copyWith(color: onSurface, fontWeight: FontWeight.bold),
                 ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'Number',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: onSurface.withValues(alpha: 0.7)),
-                    ),
-                    Text(
-                      hidden ? '**** **** ****' : '**** **** **** ${cardNumber.substring(cardNumber.length - 4)}',
-                      style: Theme.of(
-                        context,
-                      ).textTheme.titleLarge?.copyWith(color: onSurface, fontWeight: FontWeight.w700),
-                    ),
-                    Text(
-                      'Your Balance',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: onSurface.withValues(alpha: 0.7)),
-                    ),
-                    Text(
-                      hidden ? '****' : AppFormatters.amount(balance),
-                      style: Theme.of(
-                        context,
-                      ).textTheme.headlineSmall?.copyWith(color: onSurface, fontWeight: FontWeight.w700),
-                    ),
-                  ],
-                ),
+                CardBody(balance: balance, cardNumber: cardNumber, hidden: hidden),
               ],
             ),
           ),
