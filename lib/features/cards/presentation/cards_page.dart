@@ -44,7 +44,7 @@ class CardsPage extends StatelessWidget {
                     CardItem(
                       title: Text('Debit', style: TextStyle(color: theme.colorScheme.onPrimary)),
                       solidColor: theme.primaryColor,
-                      body: CardBody(cardNumber: 'XXXX XXXX XXXX XXXX', balance: 3000),
+                      body: CardBody(cardNumber: 'XXXX XXXX XXXX XXXX', balance: 3000, watermark: true),
                     ),
                     CardItem(
                       title: Text('Credit', style: TextStyle(color: themeExt.textPrimary)),
@@ -53,12 +53,19 @@ class CardsPage extends StatelessWidget {
                         cardNumber: 'XXXX XXXX XXXX XXXX',
                         balance: 3000,
                         foregroundColor: themeExt.textPrimary,
+                        watermark: true,
                       ),
                     ),
                     CardItem(
                       title: Text('Platinum Credit', style: TextStyle(color: theme.colorScheme.onPrimary)),
                       solidColor: themeExt.primaryDark,
-                      body: CardBody(cardNumber: 'XXXX XXXX XXXX XXXX', balance: 3000),
+                      body: SizedBox(
+                        height: double.maxFinite,
+                        child: Align(
+                          alignment: Alignment.bottomLeft,
+                          child: CardBody(cardNumber: 'XXXX XXXX XXXX XXXX', balance: 3000, watermark: true),
+                        ),
+                      ),
                     ),
                   ],
                 ), // Placeholder

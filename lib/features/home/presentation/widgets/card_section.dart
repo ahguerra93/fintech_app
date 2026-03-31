@@ -84,13 +84,13 @@ class CardWidget extends StatelessWidget {
           top: 0,
           right: 0,
           child: Opacity(
-            opacity: 0.25,
+            opacity: 0.2,
             child: ClipRect(
               child: Align(
                 alignment: Alignment.bottomLeft,
                 widthFactor: 0.7,
                 heightFactor: 0.6,
-                child: Image.asset(AppAssets.logoOutlined, width: 160, height: 160, fit: BoxFit.contain),
+                child: Image.asset(AppAssets.logoOutlined, width: 100, height: 100, fit: BoxFit.contain),
               ),
             ),
           ),
