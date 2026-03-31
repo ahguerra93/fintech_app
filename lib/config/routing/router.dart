@@ -2,6 +2,7 @@ import 'package:fintech_app/common/widgets/dashboard/dashboard_body.dart';
 import 'package:fintech_app/features/auth/presentation/login_page.dart';
 import 'package:fintech_app/features/cards/presentation/cards_page.dart';
 import 'package:fintech_app/features/home/presentation/home_page.dart';
+import 'package:fintech_app/features/profile/presentation/profile_page.dart';
 import 'package:fintech_app/features/stats/presentation/stats_page.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -38,7 +39,7 @@ class AppRouter {
             routes: [GoRoute(path: AppRoutes.stats, builder: (context, state) => const StatsPage())],
           ),
           StatefulShellBranch(
-            routes: [GoRoute(path: AppRoutes.profile, builder: (context, state) => const Placeholder())],
+            routes: [GoRoute(path: AppRoutes.profile, builder: (context, state) => const ProfilePage())],
           ),
         ],
       ),

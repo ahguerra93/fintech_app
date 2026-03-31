@@ -24,14 +24,16 @@ class _ActionWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeExt = Theme.of(context).extension<AppColorTheme>()!;
+    final theme = Theme.of(context);
+    final color = theme.colorScheme.primary;
     return Column(
       mainAxisSize: MainAxisSize.min,
       spacing: 8.0,
       children: [
         CircleAvatar(
           radius: 40,
-          backgroundColor: themeExt.mutedSurfaceAccent,
-          child: SizedBox(child: Icon(icon, size: 50)),
+          backgroundColor: color.withValues(alpha: 0.1),
+          child: SizedBox(child: Icon(icon, size: 50, color: color)),
         ),
         Text(label, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: themeExt.textPrimary)),
       ],
