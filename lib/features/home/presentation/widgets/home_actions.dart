@@ -1,5 +1,7 @@
 import 'package:fintech_app/app_colors.dart';
+import 'package:fintech_app/config/routing/router.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class HomeActions extends StatelessWidget {
   const HomeActions({super.key});
@@ -26,17 +28,22 @@ class _ActionWidget extends StatelessWidget {
     final themeExt = Theme.of(context).extension<AppColorTheme>()!;
     final theme = Theme.of(context);
     final color = theme.colorScheme.primary;
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      spacing: 8.0,
-      children: [
-        CircleAvatar(
-          radius: 40,
-          backgroundColor: color.withValues(alpha: 0.1),
-          child: SizedBox(child: Icon(icon, size: 50, color: color)),
-        ),
-        Text(label, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: themeExt.textPrimary)),
-      ],
+    return InkWell(
+      onTap: () {
+        context.push(AppRoutes.transaction);
+      },
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        spacing: 8.0,
+        children: [
+          CircleAvatar(
+            radius: 40,
+            backgroundColor: color.withValues(alpha: 0.1),
+            child: SizedBox(child: Icon(icon, size: 50, color: color)),
+          ),
+          Text(label, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: themeExt.textPrimary)),
+        ],
+      ),
     );
   }
 }

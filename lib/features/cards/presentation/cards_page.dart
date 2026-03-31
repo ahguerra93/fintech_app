@@ -59,12 +59,11 @@ class CardsPage extends StatelessWidget {
                     CardItem(
                       title: Text('Platinum Credit', style: TextStyle(color: theme.colorScheme.onPrimary)),
                       solidColor: themeExt.primaryDark,
-                      body: SizedBox(
-                        height: double.maxFinite,
-                        child: Align(
-                          alignment: Alignment.bottomLeft,
-                          child: CardBody(cardNumber: 'XXXX XXXX XXXX XXXX', balance: 3000, watermark: true),
-                        ),
+                      body: CardBody(
+                        cardNumber: 'XXXX XXXX XXXX XXXX',
+                        balance: 3000,
+                        watermark: true,
+                        // foregroundColor: theme.colorScheme.onPrimary,
                       ),
                     ),
                   ],
