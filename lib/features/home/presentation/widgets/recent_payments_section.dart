@@ -1,4 +1,5 @@
 import 'package:fintech_app/common/widgets/section_title.dart';
+import 'package:fintech_app/common/widgets/transaction_tile.dart';
 import 'package:flutter/material.dart';
 
 class RecentPaymentsSection extends StatelessWidget {
@@ -16,25 +17,11 @@ class RecentPaymentsSection extends StatelessWidget {
           ListView.builder(
             shrinkWrap: true,
             physics: NeverScrollableScrollPhysics(),
-            itemBuilder: (context, index) => PaymentTile(),
+            itemBuilder: (context, index) => TransactionTile(),
             itemCount: 5,
           ),
         ],
       ),
-    );
-  }
-}
-
-class PaymentTile extends StatelessWidget {
-  const PaymentTile({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      leading: CircleAvatar(child: Icon(Icons.attach_money)),
-      title: Text('John Doe'),
-      subtitle: Text('Today 12:40'),
-      trailing: Text('\$50.00'),
     );
   }
 }
