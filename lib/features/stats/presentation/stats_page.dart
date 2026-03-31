@@ -12,7 +12,7 @@ class StatsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: DropdownTitle(), backgroundColor: Colors.transparent, elevation: AppDimens.elevationNone),
+      appBar: AppBar(title: DropdownTitle(), elevation: AppDimens.elevationNone),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: AppDimens.spacingMd),
         child: SingleChildScrollView(
