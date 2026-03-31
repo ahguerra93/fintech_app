@@ -4,6 +4,7 @@ import 'package:fintech_app/features/cards/presentation/cards_page.dart';
 import 'package:fintech_app/features/home/presentation/home_page.dart';
 import 'package:fintech_app/features/profile/presentation/profile_page.dart';
 import 'package:fintech_app/features/stats/presentation/stats_page.dart';
+import 'package:fintech_app/features/transfers/presentation/transfer_page.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -13,7 +14,7 @@ class AppRoutes {
   static const String cards = '/cards';
   static const String settings = '/settings';
   static const String stats = '/stats';
-  static const String transactions = '/transactions';
+  static const String transaction = '/transaction';
   static const String login = '/login';
   static const String register = '/register';
 }
@@ -25,6 +26,7 @@ class AppRouter {
       GoRoute(path: AppRoutes.settings, builder: (context, state) => const Placeholder()),
       GoRoute(path: AppRoutes.login, builder: (context, state) => const LoginPage()),
       GoRoute(path: AppRoutes.register, builder: (context, state) => const Placeholder()),
+      GoRoute(path: AppRoutes.transaction, builder: (context, state) => const TransferPage()),
 
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) => DashboardBody(navigationShell: navigationShell),
