@@ -1,22 +1,50 @@
-import 'package:fintech_app/app_colors.dart';
 import 'package:fintech_app/common/app_dimens.dart';
 import 'package:fintech_app/common/widgets/animated/stacked_cards.dart';
 import 'package:fintech_app/common/widgets/cards/card_widget.dart';
 import 'package:fintech_app/common/widgets/section_title.dart';
 import 'package:fintech_app/common/widgets/transaction_tile.dart';
+import 'package:fintech_app/features/cards/presentation/bloc/cards_bloc/cards_bloc.dart';
+import 'package:fintech_app/features/cards/presentation/bloc/recent_transactions_bloc/recent_transactions_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CardsPage extends StatelessWidget {
   const CardsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    return CardsProviders(child: const _CardsPageBody());
+  }
+}
+
+class CardsProviders extends StatelessWidget {
+  final Widget child;
+  const CardsProviders({required this.child, super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => CardsBloc()..add(const FetchCards())),
+        BlocProvider(create: (_) => RecentTransactionsBloc()..add(const FetchRecentTransactions())),
+      ],
+      child: child,
+    );
+  }
+}
+
+class _CardsPageBody extends StatelessWidget {
+  const _CardsPageBody();
+
+  @override
+  Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final theme = Theme.of(context);
-    final themeExt = Theme.of(context).extension<AppColorTheme>()!;
+
     final TextStyle style = theme.textTheme.titleLarge!.copyWith(fontWeight: FontWeight.bold);
     final cardSectionHeight = size.height / 3;
-    const overlap = AppDimens.spacingXl + AppDimens.spacingSm; // 32 + 8 = 40 (closest to 70)
+    const overlap = AppDimens.spacingXl + AppDimens.spacingSm;
+
     return Scaffold(
       appBar: AppBar(
         title: Text('My cards', style: style),
@@ -37,37 +65,33 @@ class CardsPage extends StatelessWidget {
                   color: theme.colorScheme.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(AppDimens.radiusXl),
                 ),
-                child: StackedCards(
-                  expandedHeight: cardSectionHeight - (overlap * 2),
-                  overlap: overlap,
-                  items: [
-                    CardItem(
-                      title: Text('Debit', style: TextStyle(color: theme.colorScheme.onPrimary)),
-                      solidColor: theme.primaryColor,
-                      body: CardBody(cardNumber: 'XXXX XXXX XXXX XXXX', balance: 3000, watermark: true),
-                    ),
-                    CardItem(
-                      title: Text('Credit', style: TextStyle(color: themeExt.textPrimary)),
-                      solidColor: themeExt.mutedSurfaceAccent,
-                      body: CardBody(
-                        cardNumber: 'XXXX XXXX XXXX XXXX',
-                        balance: 3000,
-                        foregroundColor: themeExt.textPrimary,
-                        watermark: true,
-                      ),
-                    ),
-                    CardItem(
-                      title: Text('Platinum Credit', style: TextStyle(color: theme.colorScheme.onPrimary)),
-                      solidColor: themeExt.primaryDark,
-                      body: CardBody(
-                        cardNumber: 'XXXX XXXX XXXX XXXX',
-                        balance: 3000,
-                        watermark: true,
-                        // foregroundColor: theme.colorScheme.onPrimary,
-                      ),
-                    ),
-                  ],
-                ), // Placeholder
+                child: BlocBuilder<CardsBloc, CardsState>(
+                  builder: (context, state) {
+                    if (state is CardsLoading) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else if (state is CardsSuccess) {
+                      return StackedCards(
+                        expandedHeight: cardSectionHeight - (overlap * 2),
+                        overlap: overlap,
+                        items: state.cards
+                            .map(
+                              (card) => CardItem(
+                                title: Text(
+                                  card.type.displayName,
+                                  style: TextStyle(color: theme.colorScheme.onPrimary),
+                                ),
+                                solidColor: theme.primaryColor,
+                                body: CardBody(cardNumber: card.cardNumber, balance: card.balance, watermark: true),
+                              ),
+                            )
+                            .toList(),
+                      );
+                    } else if (state is CardsError) {
+                      return Center(child: Text('Error: ${state.message}'));
+                    }
+                    return const SizedBox.shrink();
+                  },
+                ),
               ),
               const SizedBox(height: AppDimens.spacingLg),
               // Actions row
@@ -83,11 +107,30 @@ class CardsPage extends StatelessWidget {
               // Recent transactions section
               const SectionTitle(title: 'Recent transactions'),
               const SizedBox(height: AppDimens.spacingSm),
-              ListView.builder(
-                itemCount: 3,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemBuilder: (context, index) => const TransactionTile(),
+              BlocBuilder<RecentTransactionsBloc, RecentTransactionsState>(
+                builder: (context, state) {
+                  if (state is RecentTransactionsLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (state is RecentTransactionsSuccess) {
+                    return ListView.builder(
+                      itemCount: state.transactions.length,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        final tx = state.transactions[index];
+                        return TransactionTile(
+                          title: tx.title,
+                          amount: tx.amount,
+                          date: tx.date,
+                          category: tx.category,
+                        );
+                      },
+                    );
+                  } else if (state is RecentTransactionsError) {
+                    return Center(child: Text('Error: ${state.message}'));
+                  }
+                  return const SizedBox.shrink();
+                },
               ),
             ],
           ),

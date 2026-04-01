@@ -5,9 +5,29 @@ import 'package:fintech_app/common/widgets/section_title.dart';
 import 'package:fintech_app/common/widgets/transaction_tile.dart';
 import 'package:fintech_app/features/stats/presentation/widgets/stats_bar_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fintech_app/features/stats/presentation/bloc/graph_data_bloc/graph_data_bloc.dart';
+import 'package:fintech_app/features/stats/presentation/bloc/stats_transactions_bloc/stats_transactions_bloc.dart';
+import 'package:fintech_app/features/stats/domain/models/graph_data_model.dart';
+import 'package:fintech_app/features/stats/domain/models/stats_transaction_model.dart';
 
 class StatsPage extends StatelessWidget {
   const StatsPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (context) => GraphDataBloc()..add(const FetchGraphData())),
+        BlocProvider(create: (context) => StatsTransactionsBloc()..add(const FetchStatsTransactions())),
+      ],
+      child: const StatsPageWidget(),
+    );
+  }
+}
+
+class StatsPageWidget extends StatelessWidget {
+  const StatsPageWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +38,34 @@ class StatsPage extends StatelessWidget {
         child: SingleChildScrollView(
           child: Column(
             spacing: AppDimens.spacingMd,
-            children: [ChartContainer(), AdditionalInfoBox(), TransactionListSection()],
+            children: [
+              BlocBuilder<GraphDataBloc, GraphDataState>(
+                builder: (context, state) {
+                  if (state is GraphDataLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (state is GraphDataSuccess) {
+                    final GraphDataModel data = state.data;
+                    return ChartContainer(graphData: data);
+                  } else if (state is GraphDataError) {
+                    return Center(child: Text('Error: ${state.message}'));
+                  }
+                  return const SizedBox.shrink();
+                },
+              ),
+              const AdditionalInfoBox(),
+              BlocBuilder<StatsTransactionsBloc, StatsTransactionsState>(
+                builder: (context, state) {
+                  if (state is StatsTransactionsLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (state is StatsTransactionsSuccess) {
+                    return TransactionListSection(transactions: state.transactions);
+                  } else if (state is StatsTransactionsError) {
+                    return Center(child: Text('Error: ${state.message}'));
+                  }
+                  return const SizedBox.shrink();
+                },
+              ),
+            ],
           ),
         ),
       ),
@@ -56,13 +103,14 @@ class DropdownTitle extends StatelessWidget {
 }
 
 class ChartContainer extends StatelessWidget {
-  const ChartContainer({super.key});
+  final GraphDataModel graphData;
+  const ChartContainer({required this.graphData, super.key});
 
   @override
   Widget build(BuildContext context) {
     final themeExt = Theme.of(context).extension<AppColorTheme>()!;
-
     final size = MediaQuery.of(context).size;
+    // Dummy values for MoneyLabel, replace with real data if available
     return Container(
       decoration: BoxDecoration(
         color: themeExt.mutedSurfaceAccent,
@@ -77,11 +125,18 @@ class ChartContainer extends StatelessWidget {
             spacing: AppDimens.spacingXs,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Text('This Week', style: theme.textTheme.titleMedium!.copyWith(fontWeight: FontWeight.bold)),
-              // SizedBox(height: 4.0),
-              MoneyLabel(label: 'Income', value: 5000),
-              MoneyLabel(label: 'Expenses', value: 3000),
-              MoneyLabel(label: 'Net', value: 2000),
+              MoneyLabel(
+                label: 'Income',
+                value: graphData.values.isNotEmpty ? graphData.values.reduce((a, b) => a > b ? a : b) : 0,
+              ),
+              MoneyLabel(
+                label: 'Expenses',
+                value: graphData.values.isNotEmpty ? graphData.values.reduce((a, b) => a < b ? a : b) : 0,
+              ),
+              MoneyLabel(
+                label: 'Net',
+                value: graphData.values.isNotEmpty ? graphData.values.reduce((a, b) => a + b) : 0,
+              ),
             ],
           ),
           SizedBox(height: size.height * 0.20, child: StatsBarChart()),
@@ -162,7 +217,8 @@ class AdditionalInfoBox extends StatelessWidget {
 }
 
 class TransactionListSection extends StatelessWidget {
-  const TransactionListSection({super.key});
+  final List<StatsTransactionModel> transactions;
+  const TransactionListSection({required this.transactions, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -173,9 +229,10 @@ class TransactionListSection extends StatelessWidget {
         ListView.builder(
           shrinkWrap: true,
           physics: NeverScrollableScrollPhysics(),
-          itemCount: 5,
+          itemCount: transactions.length,
           itemBuilder: (context, index) {
-            return TransactionTile();
+            final tx = transactions[index];
+            return TransactionTile(title: tx.title, amount: tx.amount, date: tx.date, category: tx.category);
           },
         ),
       ],

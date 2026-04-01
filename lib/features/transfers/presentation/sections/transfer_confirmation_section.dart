@@ -12,9 +12,7 @@ class TransferConfirmationSection extends StatelessWidget {
     final bloc = context.read<TransferBloc>();
     final data = bloc.data;
     final recipient = data.selectedRecipient;
-    final initials = recipient != null && recipient.name.isNotEmpty
-        ? recipient.name.trim().split(' ').map((w) => w[0]).take(2).join().toUpperCase()
-        : '?';
+
     return Scaffold(
       appBar: AppBar(
         leading: BackButton(color: theme.colorScheme.onPrimary, onPressed: () => bloc.add(PressedBack())),
@@ -49,7 +47,7 @@ class TransferConfirmationSection extends StatelessWidget {
                         radius: 38,
                         backgroundColor: theme.colorScheme.secondary,
                         child: Text(
-                          initials,
+                          recipient?.initials ?? '',
                           style: theme.textTheme.headlineMedium?.copyWith(color: theme.colorScheme.onPrimary),
                         ),
                       ),
