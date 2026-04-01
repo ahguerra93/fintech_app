@@ -1,8 +1,11 @@
 import 'package:fintech_app/config/routing/router.dart';
+import 'package:fintech_app/di/di.dart';
 import 'package:flutter/material.dart';
 import 'package:fintech_app/app_theme.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  initDependencies();
   runApp(const MyApp());
 }
 
