@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-typedef KeyboardTapCallback = void Function(String text);
+typedef KeyboardTapCallback = void Function(int digit);
 
 class NumericKeyboard extends StatefulWidget {
   /// Color of the text [default = Colors.black]
@@ -88,7 +88,7 @@ class _NumericKeyboardState extends State<NumericKeyboard> {
       child: InkWell(
         borderRadius: BorderRadius.circular(10),
         onTap: () {
-          widget.onKeyboardTap(value);
+          widget.onKeyboardTap(int.parse(value));
         },
         child: Container(
           margin: const EdgeInsets.all(10),

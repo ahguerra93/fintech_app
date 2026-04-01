@@ -1,12 +1,19 @@
 import 'package:fintech_app/common/app_formatters.dart';
+import 'package:fintech_app/features/transfers/domain/models/transfer_model.dart';
 import 'package:flutter/material.dart';
 
 class TransferSuccessSection extends StatelessWidget {
-  const TransferSuccessSection({super.key});
+  const TransferSuccessSection({super.key, required this.data});
+
+  final TransferModel data;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final recipient = data.selectedRecipient;
+    final initials = recipient != null && recipient.name.isNotEmpty
+        ? recipient.name.trim().split(' ').map((w) => w[0]).take(2).join().toUpperCase()
+        : '?';
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -31,7 +38,7 @@ class TransferSuccessSection extends StatelessWidget {
               Icon(Icons.check_circle_rounded, color: theme.colorScheme.secondary, size: 120),
               const SizedBox(height: 32),
               Text(
-                '\$${AppFormatters.amount(1200)}',
+                '\$${AppFormatters.amount(data.amount)}',
                 style: theme.textTheme.displayMedium?.copyWith(
                   color: theme.colorScheme.onPrimary,
                   fontWeight: FontWeight.bold,
@@ -39,19 +46,36 @@ class TransferSuccessSection extends StatelessWidget {
               ),
               const SizedBox(height: 16.0),
               Text(
-                'Transfered to:',
+                'Transferred to:',
                 style: theme.textTheme.titleSmall?.copyWith(
                   color: theme.colorScheme.onPrimary,
                   fontWeight: FontWeight.w300,
                 ),
               ),
-              Column(
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                spacing: 16.0,
                 children: [
-                  Text(
-                    'Alice Smith',
-                    style: theme.textTheme.headlineLarge?.copyWith(color: theme.colorScheme.onPrimary),
+                  CircleAvatar(
+                    radius: 28,
+                    backgroundColor: theme.colorScheme.secondary,
+                    child: Text(
+                      initials,
+                      style: theme.textTheme.titleLarge?.copyWith(color: theme.colorScheme.onPrimary),
+                    ),
                   ),
-                  Text('**** 1234', style: theme.textTheme.titleMedium?.copyWith(color: theme.colorScheme.onPrimary)),
+                  Column(
+                    children: [
+                      Text(
+                        recipient?.name ?? '',
+                        style: theme.textTheme.headlineLarge?.copyWith(color: theme.colorScheme.onPrimary),
+                      ),
+                      Text(
+                        recipient?.cardNumber ?? '',
+                        style: theme.textTheme.titleMedium?.copyWith(color: theme.colorScheme.onPrimary),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ],

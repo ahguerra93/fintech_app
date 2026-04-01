@@ -1,16 +1,26 @@
-import 'package:fintech_app/features/transfers/enum/transfer_stage.dart';
+import 'package:fintech_app/common/app_formatters.dart';
+import 'package:fintech_app/features/transfers/presentation/bloc/transfer_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class TransferConfirmationSection extends StatelessWidget {
-  const TransferConfirmationSection({required this.onStageChange, super.key});
-
-  final void Function(TransferStage) onStageChange;
+  const TransferConfirmationSection({super.key});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final bloc = context.read<TransferBloc>();
+    final data = bloc.data;
+    final recipient = data.selectedRecipient;
+    final initials = recipient != null && recipient.name.isNotEmpty
+        ? recipient.name.trim().split(' ').map((w) => w[0]).take(2).join().toUpperCase()
+        : '?';
     return Scaffold(
-      appBar: AppBar(backgroundColor: theme.primaryColor, foregroundColor: theme.colorScheme.onPrimary),
+      appBar: AppBar(
+        leading: BackButton(color: theme.colorScheme.onPrimary, onPressed: () => bloc.add(PressedBack())),
+        backgroundColor: theme.primaryColor,
+        foregroundColor: theme.colorScheme.onPrimary,
+      ),
       backgroundColor: theme.primaryColor,
       body: SizedBox(
         width: double.infinity,
@@ -23,13 +33,13 @@ class TransferConfirmationSection extends StatelessWidget {
                 children: [
                   Text('Send:', style: theme.textTheme.titleLarge?.copyWith(color: theme.colorScheme.onPrimary)),
                   Text(
-                    '\$1,200.00',
+                    '\$${AppFormatters.amount(data.amount)}',
                     style: theme.textTheme.displayMedium?.copyWith(
                       color: theme.colorScheme.onPrimary,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  SizedBox(height: 32.0),
+                  const SizedBox(height: 32.0),
                   Text('To:', style: theme.textTheme.titleLarge?.copyWith(color: theme.colorScheme.onPrimary)),
                   Row(
                     spacing: 16.0,
@@ -39,40 +49,36 @@ class TransferConfirmationSection extends StatelessWidget {
                         radius: 38,
                         backgroundColor: theme.colorScheme.secondary,
                         child: Text(
-                          'AS',
+                          initials,
                           style: theme.textTheme.headlineMedium?.copyWith(color: theme.colorScheme.onPrimary),
                         ),
                       ),
                       Column(
                         children: [
                           Text(
-                            'Alice Smith',
+                            recipient?.name ?? '',
                             style: theme.textTheme.headlineLarge?.copyWith(color: theme.colorScheme.onPrimary),
                           ),
                           Text(
-                            '**** 1234',
+                            recipient?.cardNumber ?? '',
                             style: theme.textTheme.titleMedium?.copyWith(color: theme.colorScheme.onPrimary),
                           ),
                         ],
                       ),
                     ],
                   ),
-                  SizedBox(height: 16.0),
-
-                  SizedBox(height: 16.0),
                 ],
               ),
             ),
-
             Container(
-              padding: EdgeInsets.only(top: 16.0, right: 16.0, left: 16.0),
+              padding: const EdgeInsets.only(top: 16.0, right: 16.0, left: 16.0),
               decoration: BoxDecoration(
                 color: theme.colorScheme.onPrimary,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
               ),
               child: SafeArea(
                 child: ElevatedButton(
-                  onPressed: () => onStageChange(TransferStage.finished),
+                  onPressed: () => bloc.add(PressedConfirm()),
                   child: Center(
                     child: Text(
                       'Confirm',
