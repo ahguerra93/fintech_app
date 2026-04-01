@@ -2,8 +2,11 @@ import 'package:fintech_app/common/widgets/section_title.dart';
 import 'package:fintech_app/common/widgets/transaction_tile.dart';
 import 'package:flutter/material.dart';
 
+import 'package:fintech_app/features/cards/domain/models/recent_transaction_model.dart';
+
 class RecentPaymentsSection extends StatelessWidget {
-  const RecentPaymentsSection({super.key});
+  final List<RecentTransactionModel> transactions;
+  const RecentPaymentsSection({required this.transactions, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -17,8 +20,11 @@ class RecentPaymentsSection extends StatelessWidget {
           ListView.builder(
             shrinkWrap: true,
             physics: NeverScrollableScrollPhysics(),
-            itemBuilder: (context, index) => TransactionTile(),
-            itemCount: 5,
+            itemCount: transactions.length,
+            itemBuilder: (context, index) {
+              final tx = transactions[index];
+              return TransactionTile(title: tx.title, amount: tx.amount, date: tx.date, category: tx.category);
+            },
           ),
         ],
       ),

@@ -5,8 +5,11 @@ import 'package:fintech_app/common/widgets/cards/card_widget.dart';
 import 'package:fintech_app/common/widgets/section_title.dart';
 import 'package:flutter/material.dart';
 
+import 'package:fintech_app/features/cards/domain/models/card_model.dart';
+
 class CardSection extends StatelessWidget {
-  const CardSection({super.key});
+  final List<CardModel> cards;
+  const CardSection({required this.cards, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -22,16 +25,21 @@ class CardSection extends StatelessWidget {
           height: 180,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
+            itemCount: cards.length,
             itemBuilder: (context, index) {
+              final card = cards[index];
               return Padding(
                 padding: EdgeInsets.only(
                   left: index == 0 ? AppDimens.spacingMd : AppDimens.spacingSm,
-                  right: index == 1 ? AppDimens.spacingMd : AppDimens.spacingSm,
+                  right: index == cards.length - 1 ? AppDimens.spacingMd : AppDimens.spacingSm,
                 ),
-                child: CardWidget(balance: 222852.00, cardNumber: '1234567812345678', debit: index == 0),
+                child: CardWidget(
+                  balance: card.balance,
+                  cardNumber: card.cardNumber,
+                  debit: card.type == CardType.debit,
+                ),
               );
             },
-            itemCount: 2,
           ),
         ),
       ],
