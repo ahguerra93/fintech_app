@@ -1,6 +1,6 @@
-import 'package:bloc/bloc.dart';
 import 'package:fintech_app/features/profile/domain/models/profile_data.dart';
-import 'package:meta/meta.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 part 'profile_event.dart';
 part 'profile_state.dart';

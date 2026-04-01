@@ -1,7 +1,6 @@
-import 'package:bloc/bloc.dart';
 import 'package:fintech_app/features/cards/domain/models/recent_transaction_model.dart';
-import 'package:meta/meta.dart';
-
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 part 'recent_transactions_event.dart';
 part 'recent_transactions_state.dart';
 

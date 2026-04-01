@@ -1,8 +1,8 @@
-import 'package:bloc/bloc.dart';
 import 'package:fintech_app/features/cards/domain/models/card_model.dart';
 import 'package:fintech_app/features/cards/domain/models/recent_transaction_model.dart';
 import 'package:fintech_app/features/home/domain/models/home_data.dart';
-import 'package:meta/meta.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 part 'home_event.dart';
 part 'home_state.dart';

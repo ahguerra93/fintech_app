@@ -1,15 +1,12 @@
-import 'package:fintech_app/app_colors.dart';
 import 'package:fintech_app/common/app_dimens.dart';
 import 'package:fintech_app/common/widgets/animated/stacked_cards.dart';
 import 'package:fintech_app/common/widgets/cards/card_widget.dart';
 import 'package:fintech_app/common/widgets/section_title.dart';
 import 'package:fintech_app/common/widgets/transaction_tile.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fintech_app/features/cards/presentation/bloc/cards_bloc/cards_bloc.dart';
 import 'package:fintech_app/features/cards/presentation/bloc/recent_transactions_bloc/recent_transactions_bloc.dart';
-import 'package:fintech_app/features/cards/domain/models/card_model.dart';
-import 'package:fintech_app/features/cards/domain/models/recent_transaction_model.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CardsPage extends StatelessWidget {
   const CardsPage({super.key});
@@ -43,7 +40,7 @@ class _CardsPageBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final theme = Theme.of(context);
-    final themeExt = Theme.of(context).extension<AppColorTheme>()!;
+
     final TextStyle style = theme.textTheme.titleLarge!.copyWith(fontWeight: FontWeight.bold);
     final cardSectionHeight = size.height / 3;
     const overlap = AppDimens.spacingXl + AppDimens.spacingSm;
@@ -76,11 +73,18 @@ class _CardsPageBody extends StatelessWidget {
                       return StackedCards(
                         expandedHeight: cardSectionHeight - (overlap * 2),
                         overlap: overlap,
-                        items: state.cards.map((card) => CardItem(
-                          title: Text(card.type.displayName, style: TextStyle(color: theme.colorScheme.onPrimary)),
-                          solidColor: theme.primaryColor,
-                          body: CardBody(cardNumber: card.cardNumber, balance: card.balance, watermark: true),
-                        )).toList(),
+                        items: state.cards
+                            .map(
+                              (card) => CardItem(
+                                title: Text(
+                                  card.type.displayName,
+                                  style: TextStyle(color: theme.colorScheme.onPrimary),
+                                ),
+                                solidColor: theme.primaryColor,
+                                body: CardBody(cardNumber: card.cardNumber, balance: card.balance, watermark: true),
+                              ),
+                            )
+                            .toList(),
                       );
                     } else if (state is CardsError) {
                       return Center(child: Text('Error: ${state.message}'));

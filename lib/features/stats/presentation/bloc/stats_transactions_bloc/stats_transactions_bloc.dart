@@ -1,6 +1,6 @@
-import 'package:bloc/bloc.dart';
 import 'package:fintech_app/features/stats/domain/models/stats_transaction_model.dart';
-import 'package:meta/meta.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 part 'stats_transactions_event.dart';
 part 'stats_transactions_state.dart';
