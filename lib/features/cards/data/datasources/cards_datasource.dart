@@ -14,6 +14,7 @@ class CardsDataSourceImpl implements CardsDataSource {
     return [
       const CardModel(cardNumber: '**** 1234', type: CardType.credit, balance: 5000.00),
       const CardModel(cardNumber: '**** 5678', type: CardType.debit, balance: 12500.00),
+      const CardModel(cardNumber: '**** 9012', type: CardType.platinum, balance: 20000.00),
     ];
   }
 
