@@ -2,6 +2,7 @@ import 'package:fintech_app/config/routing/router.dart';
 import 'package:fintech_app/di/di.dart';
 import 'package:flutter/material.dart';
 import 'package:fintech_app/app_theme.dart';
+import 'package:fintech_app/features/auth/presentation/auth_provider.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,11 +29,13 @@ class _MyAppState extends State<MyApp> {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      title: 'Flutter Demo',
-      theme: AppTheme.light,
-      darkTheme: AppTheme.dark,
-      routerConfig: router,
+    return AuthProvider(
+      child: MaterialApp.router(
+        title: 'Flutter Demo',
+        theme: AppTheme.light,
+        darkTheme: AppTheme.dark,
+        routerConfig: router,
+      ),
     );
   }
 }

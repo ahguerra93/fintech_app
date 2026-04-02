@@ -1,15 +1,18 @@
 import 'package:fintech_app/features/transfers/domain/models/transfer_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fintech_app/di/di.dart';
+import 'package:fintech_app/features/transfers/domain/usecases/transfer.dart';
 
 part 'transfer_event.dart';
 part 'transfer_state.dart';
 
 class TransferBloc extends Bloc<TransferEvent, TransferState> {
+  final TransferUseCase _transferUseCase;
   TransferModel _data = const TransferModel();
   String _amountDigits = '';
 
-  TransferBloc() : super(const TransferDataEntry()) {
+  TransferBloc() : _transferUseCase = getIt<TransferUseCase>(), super(const TransferDataEntry()) {
     on<UpdateRecipient>((event, emit) {
       _data = _data.copyWith(selectedRecipient: event.recipient);
       emit(TransferDataEntry(amountDigits: _amountDigits));
@@ -39,8 +42,16 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
 
     on<PressedConfirm>((event, emit) async {
       emit(const TransferLoading());
-      await Future.delayed(const Duration(seconds: 2));
-      emit(TransferSuccess(_data));
+      try {
+        final success = await _transferUseCase(_data);
+        if (success) {
+          emit(TransferSuccess(_data));
+        } else {
+          emit(TransferFailure(_data));
+        }
+      } catch (e) {
+        emit(TransferFailure(_data));
+      }
     });
   }
 

@@ -2,7 +2,9 @@ import 'package:fintech_app/app_colors.dart';
 import 'package:fintech_app/common/app_assets.dart';
 import 'package:fintech_app/common/app_dimens.dart';
 import 'package:fintech_app/config/routing/router.dart';
+import 'package:fintech_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 class LoginPage extends StatelessWidget {
@@ -33,30 +35,51 @@ class LoginPage extends StatelessWidget {
               flex: 2,
               child: Padding(
                 padding: const EdgeInsets.all(AppDimens.spacingXxl),
-                child: Column(
-                  spacing: AppDimens.spacingXl,
-                  children: [
-                    Text('Hello', style: theme.textTheme.displayLarge),
-                    Text(
-                      'Welcome to Fintech App, where you manage your finances effortlessly.',
-                      style: theme.textTheme.titleSmall?.copyWith(color: themeExt.textSecondary),
-                    ),
-                    TextFormField(
-                      controller: textEditingController,
-                      decoration: const InputDecoration(labelText: 'Email'),
-                    ),
-                    TextFormField(
-                      controller: passwordController,
-                      decoration: const InputDecoration(labelText: 'Password'),
-                      obscureText: true,
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        context.go(AppRoutes.home);
-                      },
-                      child: Text('Login'),
-                    ),
-                  ],
+
+                child: BlocConsumer<AuthBloc, AuthState>(
+                  listener: (context, state) {
+                    if (state is Authorized) {
+                      context.go(AppRoutes.home);
+                    }
+                  },
+                  builder: (context, state) {
+                    final isLoading = state is AuthLoading;
+                    final isError = state is AuthError;
+                    return Column(
+                      spacing: AppDimens.spacingXl,
+                      children: [
+                        Text('Hello', style: theme.textTheme.displayLarge),
+                        Text(
+                          'Welcome to Fintech App, where you manage your finances effortlessly.',
+                          style: theme.textTheme.titleSmall?.copyWith(color: themeExt.textSecondary),
+                        ),
+                        TextFormField(
+                          controller: textEditingController,
+                          decoration: const InputDecoration(labelText: 'Email'),
+                        ),
+                        TextFormField(
+                          controller: passwordController,
+                          decoration: const InputDecoration(labelText: 'Password'),
+                          obscureText: true,
+                        ),
+                        if (isError)
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 8.0),
+                            child: Text((state).message, style: TextStyle(color: theme.colorScheme.error)),
+                          ),
+                        ElevatedButton(
+                          onPressed: isLoading
+                              ? null
+                              : () {
+                                  context.read<AuthBloc>().add(
+                                    LoginRequested(textEditingController.text, passwordController.text),
+                                  );
+                                },
+                          child: isLoading ? const CircularProgressIndicator() : const Text('Login'),
+                        ),
+                      ],
+                    );
+                  },
                 ),
               ),
             ),
