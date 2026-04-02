@@ -1,33 +1,56 @@
 import 'package:fintech_app/common/widgets/section_title.dart';
 import 'package:fintech_app/common/widgets/transaction_tile.dart';
+import 'package:fintech_app/features/home/presentation/bloc/home_bloc.dart';
 import 'package:flutter/material.dart';
 
 import 'package:fintech_app/features/cards/domain/models/recent_transaction_model.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class RecentPaymentsSection extends StatelessWidget {
-  final List<RecentTransactionModel> transactions;
-  const RecentPaymentsSection({required this.transactions, super.key});
+  const RecentPaymentsSection({super.key});
+
+  static final List<RecentTransactionModel> _loadingTransactions = List.filled(
+    5,
+    RecentTransactionModel(title: 'Loading', amount: 10000, date: DateTime.now(), category: 'Loading', id: ''),
+  );
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SectionTitle(title: 'Recent Payments', subtitle: 'View All', onTap: () {}),
-          SizedBox(height: 16.0),
-          ListView.builder(
-            shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
-            itemCount: transactions.length,
-            itemBuilder: (context, index) {
-              final tx = transactions[index];
-              return TransactionTile(title: tx.title, amount: tx.amount, date: tx.date, category: tx.category);
-            },
-          ),
-        ],
-      ),
+    return Column(
+      key: const Key('recent_payments_section'),
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SectionTitle(
+          key: const Key('recent_payments_title'),
+          title: 'Recent Payments',
+          subtitle: 'View All',
+          onTap: () {},
+        ),
+        SizedBox(height: 16.0),
+        BlocBuilder<HomeBloc, HomeState>(
+          buildWhen: (previous, current) => (previous is HomeLoading) != (current is HomeLoading),
+          builder: (context, state) {
+            final loading = state is HomeLoading;
+            final transactions = loading ? _loadingTransactions : (state as HomeSuccess).data.recentTransactions;
+
+            return Skeletonizer(
+              enabled: loading,
+              enableSwitchAnimation: true,
+              child: ListView.builder(
+                shrinkWrap: true,
+                padding: EdgeInsets.zero,
+                physics: NeverScrollableScrollPhysics(),
+                itemCount: loading ? _loadingTransactions.length : transactions.length,
+                itemBuilder: (context, index) {
+                  final tx = loading ? _loadingTransactions[index] : transactions[index];
+                  return TransactionTile(title: tx.title, amount: tx.amount, date: tx.date, category: tx.category);
+                },
+              ),
+            );
+          },
+        ),
+      ],
     );
   }
 }

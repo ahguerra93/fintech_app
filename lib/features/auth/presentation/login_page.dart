@@ -45,39 +45,41 @@ class LoginPage extends StatelessWidget {
                   builder: (context, state) {
                     final isLoading = state is AuthLoading;
                     final isError = state is AuthError;
-                    return Column(
-                      spacing: AppDimens.spacingXl,
-                      children: [
-                        Text('Hello', style: theme.textTheme.displayLarge),
-                        Text(
-                          'Welcome to Fintech App, where you manage your finances effortlessly.',
-                          style: theme.textTheme.titleSmall?.copyWith(color: themeExt.textSecondary),
-                        ),
-                        TextFormField(
-                          controller: textEditingController,
-                          decoration: const InputDecoration(labelText: 'Email'),
-                        ),
-                        TextFormField(
-                          controller: passwordController,
-                          decoration: const InputDecoration(labelText: 'Password'),
-                          obscureText: true,
-                        ),
-                        if (isError)
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 8.0),
-                            child: Text((state).message, style: TextStyle(color: theme.colorScheme.error)),
+                    return SingleChildScrollView(
+                      child: Column(
+                        spacing: AppDimens.spacingXl,
+                        children: [
+                          Text('Hello', style: theme.textTheme.displayLarge),
+                          Text(
+                            'Welcome to Fintech App, where you manage your finances effortlessly.',
+                            style: theme.textTheme.titleSmall?.copyWith(color: themeExt.textSecondary),
                           ),
-                        ElevatedButton(
-                          onPressed: isLoading
-                              ? null
-                              : () {
-                                  context.read<AuthBloc>().add(
-                                    LoginRequested(textEditingController.text, passwordController.text),
-                                  );
-                                },
-                          child: isLoading ? const CircularProgressIndicator() : const Text('Login'),
-                        ),
-                      ],
+                          TextFormField(
+                            controller: textEditingController,
+                            decoration: const InputDecoration(labelText: 'Email'),
+                          ),
+                          TextFormField(
+                            controller: passwordController,
+                            decoration: const InputDecoration(labelText: 'Password'),
+                            obscureText: true,
+                          ),
+                          if (isError)
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 8.0),
+                              child: Text((state).message, style: TextStyle(color: theme.colorScheme.error)),
+                            ),
+                          ElevatedButton(
+                            onPressed: isLoading
+                                ? null
+                                : () {
+                                    context.read<AuthBloc>().add(
+                                      LoginRequested(textEditingController.text, passwordController.text),
+                                    );
+                                  },
+                            child: isLoading ? const CircularProgressIndicator() : const Text('Login'),
+                          ),
+                        ],
+                      ),
                     );
                   },
                 ),

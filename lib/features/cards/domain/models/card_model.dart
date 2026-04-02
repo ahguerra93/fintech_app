@@ -1,6 +1,7 @@
 enum CardType {
   credit('Credit'),
-  debit('Debit');
+  debit('Debit'),
+  platinum('Platinum');
 
   final String displayName;
   const CardType(this.displayName);

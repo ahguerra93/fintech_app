@@ -3,13 +3,20 @@ import 'package:fintech_app/common/app_assets.dart';
 import 'package:fintech_app/common/app_dimens.dart';
 import 'package:fintech_app/common/widgets/cards/card_widget.dart';
 import 'package:fintech_app/common/widgets/section_title.dart';
+import 'package:fintech_app/features/home/presentation/bloc/home_bloc.dart';
 import 'package:flutter/material.dart';
 
 import 'package:fintech_app/features/cards/domain/models/card_model.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class CardSection extends StatelessWidget {
-  final List<CardModel> cards;
-  const CardSection({required this.cards, super.key});
+  const CardSection({super.key});
+
+  static final List<CardModel> _dummyCards = List.filled(
+    3,
+    CardModel(cardNumber: '**** **** **** 1234', balance: 5230.75, type: CardType.debit),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -23,20 +30,31 @@ class CardSection extends StatelessWidget {
         ),
         SizedBox(
           height: 180,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: cards.length,
-            itemBuilder: (context, index) {
-              final card = cards[index];
-              return Padding(
-                padding: EdgeInsets.only(
-                  left: index == 0 ? AppDimens.spacingMd : AppDimens.spacingSm,
-                  right: index == cards.length - 1 ? AppDimens.spacingMd : AppDimens.spacingSm,
-                ),
-                child: CardWidget(
-                  balance: card.balance,
-                  cardNumber: card.cardNumber,
-                  debit: card.type == CardType.debit,
+          child: BlocBuilder<HomeBloc, HomeState>(
+            buildWhen: (previous, current) => (previous is HomeLoading) != (current is HomeLoading),
+            builder: (context, state) {
+              final loading = state is HomeLoading;
+              final cards = loading ? _dummyCards : (state as HomeSuccess).data.cards;
+              return Skeletonizer(
+                enabled: loading,
+                enableSwitchAnimation: true,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: cards.length,
+                  itemBuilder: (context, index) {
+                    final card = cards[index];
+                    return Padding(
+                      padding: EdgeInsets.only(
+                        left: index == 0 ? AppDimens.spacingMd : AppDimens.spacingSm,
+                        right: index == cards.length - 1 ? AppDimens.spacingMd : AppDimens.spacingSm,
+                      ),
+                      child: CardWidget(
+                        balance: card.balance,
+                        cardNumber: card.cardNumber,
+                        debit: card.type == CardType.debit,
+                      ),
+                    );
+                  },
                 ),
               );
             },
@@ -81,9 +99,14 @@ class CardWidget extends StatelessWidget {
                   debit ? 'Debit Card' : 'Credit Card',
                   style: Theme.of(
                     context,
-                  ).textTheme.titleLarge?.copyWith(color: onSurface, fontWeight: FontWeight.bold),
+                  ).textTheme.titleLarge?.copyWith(color: debit ? null : onSurface, fontWeight: FontWeight.bold),
                 ),
-                CardBody(balance: balance, cardNumber: cardNumber, hidden: hidden),
+                CardBody(
+                  balance: balance,
+                  cardNumber: cardNumber,
+                  foregroundColor: debit ? themeExt.textPrimary : onSurface,
+                  hidden: hidden,
+                ),
               ],
             ),
           ),

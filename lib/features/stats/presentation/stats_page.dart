@@ -10,6 +10,7 @@ import 'package:fintech_app/features/stats/presentation/bloc/graph_data_bloc/gra
 import 'package:fintech_app/features/stats/presentation/bloc/stats_transactions_bloc/stats_transactions_bloc.dart';
 import 'package:fintech_app/features/stats/domain/models/graph_data_model.dart';
 import 'package:fintech_app/features/stats/domain/models/stats_transaction_model.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class StatsPage extends StatelessWidget {
   const StatsPage({super.key});
@@ -38,34 +39,7 @@ class StatsPageWidget extends StatelessWidget {
         child: SingleChildScrollView(
           child: Column(
             spacing: AppDimens.spacingMd,
-            children: [
-              BlocBuilder<GraphDataBloc, GraphDataState>(
-                builder: (context, state) {
-                  if (state is GraphDataLoading) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (state is GraphDataSuccess) {
-                    final GraphDataModel data = state.data;
-                    return ChartContainer(graphData: data);
-                  } else if (state is GraphDataError) {
-                    return Center(child: Text('Error: ${state.message}'));
-                  }
-                  return const SizedBox.shrink();
-                },
-              ),
-              const AdditionalInfoBox(),
-              BlocBuilder<StatsTransactionsBloc, StatsTransactionsState>(
-                builder: (context, state) {
-                  if (state is StatsTransactionsLoading) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (state is StatsTransactionsSuccess) {
-                    return TransactionListSection(transactions: state.transactions);
-                  } else if (state is StatsTransactionsError) {
-                    return Center(child: Text('Error: ${state.message}'));
-                  }
-                  return const SizedBox.shrink();
-                },
-              ),
-            ],
+            children: [const _GraphSection(), const AdditionalInfoBox(), const _TransactionsSection()],
           ),
         ),
       ),
@@ -236,6 +210,58 @@ class TransactionListSection extends StatelessWidget {
           },
         ),
       ],
+    );
+  }
+}
+
+class _GraphSection extends StatelessWidget {
+  const _GraphSection();
+
+  static final GraphDataModel _dummyGraphData = GraphDataModel(
+    labels: List.filled(7, 'Loading'),
+    values: List.filled(7, 500.0),
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<GraphDataBloc, GraphDataState>(
+      buildWhen: (previous, current) => (previous is GraphDataLoading) != (current is GraphDataLoading),
+      builder: (context, state) {
+        final loading = state is GraphDataLoading;
+        final graphData = loading ? _dummyGraphData : (state as GraphDataSuccess).data;
+
+        return Skeletonizer(
+          enabled: loading,
+          enableSwitchAnimation: true,
+          child: ChartContainer(graphData: graphData),
+        );
+      },
+    );
+  }
+}
+
+class _TransactionsSection extends StatelessWidget {
+  const _TransactionsSection();
+
+  static final List<StatsTransactionModel> _dummyTransactions = List.filled(
+    5,
+    StatsTransactionModel(title: 'Loading', amount: 100.0, date: DateTime.now(), category: 'Loading', id: ''),
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<StatsTransactionsBloc, StatsTransactionsState>(
+      buildWhen: (previous, current) => (previous is StatsTransactionsLoading) != (current is StatsTransactionsLoading),
+      builder: (context, state) {
+        final loading = state is StatsTransactionsLoading;
+        final transactions = loading ? _dummyTransactions : (state as StatsTransactionsSuccess).transactions;
+
+        return Skeletonizer(
+          enabled: loading,
+          enableSwitchAnimation: true,
+          child: TransactionListSection(transactions: transactions),
+        );
+      },
     );
   }
 }
