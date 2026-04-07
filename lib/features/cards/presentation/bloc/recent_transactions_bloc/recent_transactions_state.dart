@@ -18,3 +18,7 @@ final class RecentTransactionsError extends RecentTransactionsState {
   final String message;
   const RecentTransactionsError(this.message);
 }
+
+final class RecentTransactionsEmpty extends RecentTransactionsState {
+  const RecentTransactionsEmpty();
+}

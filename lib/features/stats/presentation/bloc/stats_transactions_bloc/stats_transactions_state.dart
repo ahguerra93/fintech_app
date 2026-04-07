@@ -20,3 +20,7 @@ final class StatsTransactionsError extends StatsTransactionsState {
 
   const StatsTransactionsError(this.message);
 }
+
+final class StatsTransactionsEmpty extends StatsTransactionsState {
+  const StatsTransactionsEmpty();
+}

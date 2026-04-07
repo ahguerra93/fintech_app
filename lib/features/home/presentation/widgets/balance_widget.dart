@@ -15,7 +15,9 @@ class BalanceWidget extends StatelessWidget {
         Text('Your Balance', style: Theme.of(context).textTheme.titleMedium),
 
         BlocBuilder<HomeBloc, HomeState>(
-          buildWhen: (previous, current) => (previous is HomeLoading) != (current is HomeLoading),
+          buildWhen: (previous, current) =>
+              (previous is HomeLoading) != (current is HomeLoading) &&
+              (previous is! HomeError && current is! HomeError),
           builder: (context, state) {
             return Skeletonizer(
               enableSwitchAnimation: true,
@@ -28,7 +30,10 @@ class BalanceWidget extends StatelessWidget {
                     TextSpan(
                       text: state is HomeLoading
                           ? '\$1,000.00'
-                          : AppFormatters.amount((state as HomeSuccess).data.balance),
+                          : AppFormatters.amount((switch (state) {
+                              HomeSuccess(:final data) => data.balance,
+                              _ => 0,
+                            })),
                       style: Theme.of(context).textTheme.displaySmall?.copyWith(fontWeight: FontWeight.w700),
                     ),
                   ],
