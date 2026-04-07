@@ -24,9 +24,7 @@ class CardsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(
-          create: (context) => CardsBloc(context.read<DevToolsCubit>())..add(const FetchCards()),
-        ),
+        BlocProvider(create: (context) => CardsBloc(context.read<DevToolsCubit>())..add(const FetchCards())),
         BlocProvider(
           create: (context) =>
               RecentTransactionsBloc(context.read<DevToolsCubit>())..add(const FetchRecentTransactions()),

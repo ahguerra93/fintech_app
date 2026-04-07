@@ -24,9 +24,7 @@ class StatsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(
-          create: (context) => GraphDataBloc(context.read<DevToolsCubit>())..add(const FetchGraphData()),
-        ),
+        BlocProvider(create: (context) => GraphDataBloc(context.read<DevToolsCubit>())..add(const FetchGraphData())),
         BlocProvider(
           create: (context) =>
               StatsTransactionsBloc(context.read<DevToolsCubit>())..add(const FetchStatsTransactions()),

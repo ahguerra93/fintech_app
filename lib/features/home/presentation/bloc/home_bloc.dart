@@ -13,9 +13,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final FetchHomeDataUseCase _fetchHomeDataUseCase;
   final DevToolsCubit _devToolsCubit;
 
-  HomeBloc(this._devToolsCubit)
-    : _fetchHomeDataUseCase = getIt<FetchHomeDataUseCase>(),
-      super(const HomeLoading()) {
+  HomeBloc(this._devToolsCubit) : _fetchHomeDataUseCase = getIt<FetchHomeDataUseCase>(), super(const HomeLoading()) {
     on<FetchHomeData>(_onFetchHomeData);
   }
 

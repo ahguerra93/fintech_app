@@ -13,9 +13,7 @@ class CardsBloc extends Bloc<CardsEvent, CardsState> {
   final FetchCardsUseCase _fetchCardsUseCase;
   final DevToolsCubit _devToolsCubit;
 
-  CardsBloc(this._devToolsCubit)
-    : _fetchCardsUseCase = getIt<FetchCardsUseCase>(),
-      super(const CardsLoading()) {
+  CardsBloc(this._devToolsCubit) : _fetchCardsUseCase = getIt<FetchCardsUseCase>(), super(const CardsLoading()) {
     on<FetchCards>(_onFetchCards);
   }
 
