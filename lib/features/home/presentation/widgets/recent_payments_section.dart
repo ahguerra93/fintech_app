@@ -37,16 +37,19 @@ class RecentPaymentsSection extends StatelessWidget {
             return Skeletonizer(
               enabled: loading,
               enableSwitchAnimation: true,
-              child: ListView.builder(
-                shrinkWrap: true,
-                padding: EdgeInsets.zero,
-                physics: NeverScrollableScrollPhysics(),
-                itemCount: loading ? _loadingTransactions.length : transactions.length,
-                itemBuilder: (context, index) {
-                  final tx = loading ? _loadingTransactions[index] : transactions[index];
-                  return TransactionTile(title: tx.title, amount: tx.amount, date: tx.date, category: tx.category);
-                },
-              ),
+              child: switch (state) {
+                HomeError(:final message) => Center(child: Text(message)),
+                _ => ListView.builder(
+                  shrinkWrap: true,
+                  padding: EdgeInsets.zero,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemCount: loading ? _loadingTransactions.length : transactions.length,
+                  itemBuilder: (context, index) {
+                    final tx = loading ? _loadingTransactions[index] : transactions[index];
+                    return TransactionTile(title: tx.title, amount: tx.amount, date: tx.date, category: tx.category);
+                  },
+                ),
+              },
             );
           },
         ),

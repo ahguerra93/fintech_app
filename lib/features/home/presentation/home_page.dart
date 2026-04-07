@@ -1,4 +1,5 @@
 import 'package:fintech_app/config/routing/router.dart';
+import 'package:fintech_app/features/dev_tools/presentation/cubit/devtools_cubit.dart';
 import 'package:fintech_app/features/home/presentation/bloc/home_bloc.dart';
 import 'package:fintech_app/features/home/presentation/widgets/balance_widget.dart';
 import 'package:fintech_app/features/home/presentation/widgets/card_section.dart';
@@ -14,7 +15,10 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(create: (context) => HomeBloc()..add(FetchHomeData()), child: const HomePageWidget());
+    return BlocProvider(
+      create: (context) => HomeBloc(context.read<DevToolsCubit>())..add(FetchHomeData()),
+      child: const HomePageWidget(),
+    );
   }
 }
 

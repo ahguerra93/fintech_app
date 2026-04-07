@@ -34,28 +34,34 @@ class CardSection extends StatelessWidget {
             buildWhen: (previous, current) => (previous is HomeLoading) != (current is HomeLoading),
             builder: (context, state) {
               final loading = state is HomeLoading;
-              final cards = loading ? _dummyCards : (state as HomeSuccess).data.cards;
+              final cards = switch (state) {
+                HomeSuccess(:final data) => data.cards,
+                _ => _dummyCards,
+              };
               return Skeletonizer(
                 enabled: loading,
                 enableSwitchAnimation: true,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: cards.length,
-                  itemBuilder: (context, index) {
-                    final card = cards[index];
-                    return Padding(
-                      padding: EdgeInsets.only(
-                        left: index == 0 ? AppDimens.spacingMd : AppDimens.spacingSm,
-                        right: index == cards.length - 1 ? AppDimens.spacingMd : AppDimens.spacingSm,
-                      ),
-                      child: CardWidget(
-                        balance: card.balance,
-                        cardNumber: card.cardNumber,
-                        debit: card.type == CardType.debit,
-                      ),
-                    );
-                  },
-                ),
+                child: switch (state) {
+                  HomeError(:final message) => Center(child: Text(message)),
+                  _ => ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: cards.length,
+                    itemBuilder: (context, index) {
+                      final card = cards[index];
+                      return Padding(
+                        padding: EdgeInsets.only(
+                          left: index == 0 ? AppDimens.spacingMd : AppDimens.spacingSm,
+                          right: index == cards.length - 1 ? AppDimens.spacingMd : AppDimens.spacingSm,
+                        ),
+                        child: CardWidget(
+                          balance: card.balance,
+                          cardNumber: card.cardNumber,
+                          debit: card.type == CardType.debit,
+                        ),
+                      );
+                    },
+                  ),
+                },
               );
             },
           ),

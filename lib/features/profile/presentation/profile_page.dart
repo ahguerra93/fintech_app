@@ -1,5 +1,7 @@
 import 'package:fintech_app/app_colors.dart';
 import 'package:fintech_app/common/app_dimens.dart';
+import 'package:fintech_app/features/dev_tools/presentation/cubit/devtools_cubit.dart';
+import 'package:fintech_app/features/dev_tools/presentation/cubit/devtools_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fintech_app/features/profile/presentation/bloc/profile_bloc.dart';
@@ -71,6 +73,71 @@ class ProfilePageWidget extends StatelessWidget {
                 const SizedBox(height: AppDimens.spacingMd),
                 _ProfileNavTile(icon: Icons.dark_mode, label: 'Dark mode', onTap: () {}),
                 _ProfileNavTile(icon: Icons.language, label: 'Language', onTap: () {}),
+              ],
+            ),
+          ),
+          SizedBox(height: sectionSpacing),
+          // Developer Tools
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: AppDimens.spacingLg, horizontal: AppDimens.spacingLg),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surface,
+              borderRadius: BorderRadius.circular(AppDimens.radiusXl),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Developer Tools', style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold)),
+                const SizedBox(height: AppDimens.spacingMd),
+                BlocBuilder<DevToolsCubit, DevToolsState>(
+                  builder: (context, state) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(Icons.bug_report, color: theme.colorScheme.primary, size: AppDimens.iconLg),
+                            const SizedBox(width: AppDimens.spacingMd),
+                            Text('Response Type', style: theme.textTheme.bodyLarge),
+                          ],
+                        ),
+                        const SizedBox(height: AppDimens.spacingMd),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: AppDimens.spacingMd),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: theme.colorScheme.primary),
+                            borderRadius: BorderRadius.circular(AppDimens.radiusMd),
+                          ),
+                          child: DropdownButton<ResponseType>(
+                            value: state.responseType,
+                            isExpanded: true,
+                            underline: const SizedBox(),
+                            icon: Icon(Icons.arrow_drop_down, color: theme.colorScheme.primary),
+                            items: ResponseType.values
+                                .map(
+                                  (type) => DropdownMenuItem(
+                                    value: type,
+                                    child: Text(
+                                      type.name,
+                                      style: theme.textTheme.bodyLarge?.copyWith(
+                                        color: theme.colorScheme.primary,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ),
+                                )
+                                .toList(),
+                            onChanged: (ResponseType? newValue) {
+                              if (newValue != null) {
+                                context.read<DevToolsCubit>().setResponseType(newValue);
+                              }
+                            },
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
               ],
             ),
           ),
