@@ -275,9 +275,10 @@ class _AdditionalInfoBoxState extends State<AdditionalInfoBox> {
               enableSwitchAnimation: true,
               switchAnimationConfig: SwitchAnimationConfig(duration: Duration(milliseconds: enableAnimation ? 350 : 0)),
               enabled: state is GraphDataLoading,
-              child: SizedBox(
-                height: 80,
-                child: PageView.builder(
+              child: RepaintBoundary(
+                child: SizedBox(
+                  height: 80,
+                  child: PageView.builder(
                   controller: _pageController,
                   itemCount: AdditionalInfoBox._infoItems.length,
                   itemBuilder: (context, index) {
@@ -289,6 +290,7 @@ class _AdditionalInfoBoxState extends State<AdditionalInfoBox> {
                   },
                 ),
               ),
+            ),
             ),
             // Pagination dots
             Row(
@@ -410,8 +412,11 @@ class _GraphSection extends StatelessWidget {
 
         return Skeletonizer(
           enabled: loading,
-          enableSwitchAnimation: enableAnimation,
-          child: ChartContainer(graphData: graphData),
+          enableSwitchAnimation: true,
+          switchAnimationConfig: SwitchAnimationConfig(duration: Duration(milliseconds: enableAnimation ? 350 : 0)),
+          child: RepaintBoundary(
+            child: ChartContainer(graphData: graphData),
+          ),
         );
       },
     );
@@ -445,12 +450,15 @@ class _TransactionsSection extends StatelessWidget {
         final loading = state is StatsTransactionsLoading;
         return Skeletonizer(
           enabled: loading,
-          enableSwitchAnimation: enableAnimation,
+          enableSwitchAnimation: true,
+          switchAnimationConfig: SwitchAnimationConfig(duration: Duration(milliseconds: enableAnimation ? 350 : 0)),
           child: AnimatedSwitcher(
             duration: const Duration(milliseconds: 300),
-            child: transactions.isEmpty
-                ? EmptyStateWidget(key: const ValueKey('empty_stats_transactions'), message: 'No transactions')
-                : TransactionListSection(key: const ValueKey('stats_transactions_list'), transactions: transactions),
+            child: RepaintBoundary(
+              child: transactions.isEmpty
+                  ? EmptyStateWidget(key: const ValueKey('empty_stats_transactions'), message: 'No transactions')
+                  : TransactionListSection(key: const ValueKey('stats_transactions_list'), transactions: transactions),
+            ),
           ),
         );
       },

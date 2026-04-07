@@ -228,50 +228,52 @@ class _CardsSection extends StatelessWidget {
             enabled: loading,
             enableSwitchAnimation: true,
             switchAnimationConfig: SwitchAnimationConfig(duration: Duration(milliseconds: enableAnimation ? 350 : 0)),
-            child: cards.isEmpty
-                ? EmptyStateWidget(
-                    message: 'No cards added yet',
-                    icon: Icon(Icons.credit_card, size: 48, color: theme.hintColor),
-                    actionLabel: 'Add Card +',
-                    onActionPressed: () {
-                      // Navigate to add card
-                    },
-                  )
-                : StackedCards(
-                    expandedHeight: cardSectionHeight - (overlap * 2),
-                    overlap: overlap,
-                    items: cards
-                        .map(
-                          (card) => CardItem(
-                            title: Text(
-                              card.type.displayName,
-                              style: TextStyle(
-                                color: switch (card.type) {
+            child: RepaintBoundary(
+              child: cards.isEmpty
+                  ? EmptyStateWidget(
+                      message: 'No cards added yet',
+                      icon: Icon(Icons.credit_card, size: 48, color: theme.hintColor),
+                      actionLabel: 'Add Card +',
+                      onActionPressed: () {
+                        // Navigate to add card
+                      },
+                    )
+                  : StackedCards(
+                      expandedHeight: cardSectionHeight - (overlap * 2),
+                      overlap: overlap,
+                      items: cards
+                          .map(
+                            (card) => CardItem(
+                              title: Text(
+                                card.type.displayName,
+                                style: TextStyle(
+                                  color: switch (card.type) {
+                                    CardType.debit => theme.colorScheme.onPrimary,
+                                    CardType.credit => themeExt.textPrimary,
+                                    CardType.platinum => theme.colorScheme.onPrimary,
+                                  },
+                                ),
+                              ),
+                              solidColor: switch (card.type) {
+                                CardType.debit => theme.colorScheme.primary,
+                                CardType.credit => theme.colorScheme.secondaryContainer,
+                                CardType.platinum => themeExt.primaryDark,
+                              },
+                              body: CardBody(
+                                foregroundColor: switch (card.type) {
                                   CardType.debit => theme.colorScheme.onPrimary,
                                   CardType.credit => themeExt.textPrimary,
                                   CardType.platinum => theme.colorScheme.onPrimary,
                                 },
+                                cardNumber: card.cardNumber,
+                                balance: card.balance,
+                                watermark: true,
                               ),
                             ),
-                            solidColor: switch (card.type) {
-                              CardType.debit => theme.colorScheme.primary,
-                              CardType.credit => theme.colorScheme.secondaryContainer,
-                              CardType.platinum => themeExt.primaryDark,
-                            },
-                            body: CardBody(
-                              foregroundColor: switch (card.type) {
-                                CardType.debit => theme.colorScheme.onPrimary,
-                                CardType.credit => themeExt.textPrimary,
-                                CardType.platinum => theme.colorScheme.onPrimary,
-                              },
-                              cardNumber: card.cardNumber,
-                              balance: card.balance,
-                              watermark: true,
-                            ),
-                          ),
-                        )
-                        .toList(),
-                  ),
+                          )
+                          .toList(),
+                    ),
+            ),
           );
         },
       ),
@@ -309,8 +311,7 @@ class _RecentTransactionsSection extends StatelessWidget {
           enabled: loading,
           enableSwitchAnimation: true,
           switchAnimationConfig: SwitchAnimationConfig(duration: Duration(milliseconds: enableAnimation ? 350 : 0)),
-          child: AnimatedSwitcher(
-            duration: const Duration(milliseconds: 300),
+          child: RepaintBoundary(
             child: transactions.isEmpty
                 ? EmptyStateWidget(key: const ValueKey('empty_transactions'), message: 'No recent transactions')
                 : Align(

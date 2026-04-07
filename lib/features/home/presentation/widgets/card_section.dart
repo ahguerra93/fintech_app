@@ -45,9 +45,14 @@ class CardSection extends StatelessWidget {
                 HomeSuccess(:final data) => data.cards,
                 _ => _dummyCards,
               };
+              print('Rebuilding CardSection - loading: $loading, cards: ${cards.length}');
               return Skeletonizer(
+                key: ValueKey('card_section_skeletonizer_${loading ? 'loading' : 'loaded'}'),
                 enabled: loading,
-                enableSwitchAnimation: enableAnimation,
+                enableSwitchAnimation: true,
+                switchAnimationConfig: SwitchAnimationConfig(
+                  duration: Duration(milliseconds: enableAnimation ? 350 : 0),
+                ),
                 child: cards.isEmpty
                     ? EmptyStateWidget(
                         message: 'No cards added yet',

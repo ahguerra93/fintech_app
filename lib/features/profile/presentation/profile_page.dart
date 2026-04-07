@@ -295,40 +295,42 @@ class _UserInfoContent extends StatelessWidget {
       enabled: loading,
       enableSwitchAnimation: true,
       switchAnimationConfig: SwitchAnimationConfig(duration: Duration(milliseconds: enableAnimation ? 350 : 0)),
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: AppDimens.spacingMd, horizontal: AppDimens.spacingLg),
-        decoration: BoxDecoration(
-          color: theme.colorScheme.surface,
-          borderRadius: BorderRadius.circular(AppDimens.radiusXl),
-        ),
-        child: Row(
-          spacing: 16.0,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CircleAvatar(
-              radius: AppDimens.iconLg,
-              backgroundColor: themeExt.primary,
-              child: Text(
-                userName.isNotEmpty ? userName.split(' ').map((e) => e[0]).take(2).join() : '?',
-                style: theme.textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: theme.colorScheme.onPrimary,
+      child: RepaintBoundary(
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: AppDimens.spacingMd, horizontal: AppDimens.spacingLg),
+          decoration: BoxDecoration(
+            color: theme.colorScheme.surface,
+            borderRadius: BorderRadius.circular(AppDimens.radiusXl),
+          ),
+          child: Row(
+            spacing: 16.0,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircleAvatar(
+                radius: AppDimens.iconLg,
+                backgroundColor: themeExt.primary,
+                child: Text(
+                  userName.isNotEmpty ? userName.split(' ').map((e) => e[0]).take(2).join() : '?',
+                  style: theme.textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: theme.colorScheme.onPrimary,
+                  ),
                 ),
               ),
-            ),
-            Flexible(
-              child: Column(
-                children: [
-                  const SizedBox(height: AppDimens.spacingLg),
-                  Text(userName, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
-                  const SizedBox(height: AppDimens.spacingSm),
-                  Text(userEmail, style: theme.textTheme.bodyMedium?.copyWith(color: theme.hintColor)),
-                  const SizedBox(height: AppDimens.spacingSm),
-                  Text(accountId, style: theme.textTheme.bodySmall?.copyWith(letterSpacing: 2)),
-                ],
+              Flexible(
+                child: Column(
+                  children: [
+                    const SizedBox(height: AppDimens.spacingLg),
+                    Text(userName, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+                    const SizedBox(height: AppDimens.spacingSm),
+                    Text(userEmail, style: theme.textTheme.bodyMedium?.copyWith(color: theme.hintColor)),
+                    const SizedBox(height: AppDimens.spacingSm),
+                    Text(accountId, style: theme.textTheme.bodySmall?.copyWith(letterSpacing: 2)),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

@@ -48,9 +48,10 @@ class RecentPaymentsSection extends StatelessWidget {
               enabled: loading,
               enableSwitchAnimation: true,
               switchAnimationConfig: SwitchAnimationConfig(duration: Duration(milliseconds: enableAnimation ? 350 : 0)),
-              child: transactions.isEmpty
-                  ? EmptyStateWidget(message: 'No recent payments')
-                  : ListView.builder(
+              child: RepaintBoundary(
+                child: transactions.isEmpty
+                    ? EmptyStateWidget(message: 'No recent payments')
+                    : ListView.builder(
                       shrinkWrap: true,
                       padding: EdgeInsets.zero,
                       physics: NeverScrollableScrollPhysics(),
@@ -65,6 +66,7 @@ class RecentPaymentsSection extends StatelessWidget {
                         );
                       },
                     ),
+              ),
             );
           },
         ),
