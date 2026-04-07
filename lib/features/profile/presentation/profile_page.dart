@@ -16,7 +16,7 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => ProfileBloc(context.read<DevToolsCubit>())..add(const FetchProfileData(initial: true)),
+      create: (context) => ProfileBloc(context.read<DevToolsCubit>())..add(const FetchProfileData()),
       child: const ProfilePageWidget(),
     );
   }
@@ -60,7 +60,7 @@ class _ProfilePageWidgetState extends State<ProfilePageWidget> {
     }
 
     if (newLocation == AppRoutes.profile) {
-      context.read<ProfileBloc>().add(const FetchProfileData(initial: true));
+      context.read<ProfileBloc>().add(const FetchProfileData());
     }
 
     _currentLocation = newLocation;
@@ -278,11 +278,6 @@ class _UserInfoContent extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    final enableAnimation = switch (state) {
-      ProfileLoading(:final initial) => !initial,
-      _ => true,
-    };
-
     final dummyName = 'Loading User';
     final dummyEmail = 'user@example.com';
     final dummyAccountId = 'ACC123456';
@@ -294,7 +289,6 @@ class _UserInfoContent extends StatelessWidget {
     return Skeletonizer(
       enabled: loading,
       enableSwitchAnimation: true,
-      switchAnimationConfig: SwitchAnimationConfig(duration: Duration(milliseconds: enableAnimation ? 350 : 0)),
       child: RepaintBoundary(
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: AppDimens.spacingMd, horizontal: AppDimens.spacingLg),

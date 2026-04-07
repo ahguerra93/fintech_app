@@ -6,8 +6,7 @@ sealed class StatsTransactionsState {
 }
 
 final class StatsTransactionsLoading extends StatsTransactionsState {
-  final bool initial;
-  const StatsTransactionsLoading({this.initial = false});
+  const StatsTransactionsLoading();
 }
 
 final class StatsTransactionsSuccess extends StatsTransactionsState {

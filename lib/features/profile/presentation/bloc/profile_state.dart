@@ -6,8 +6,7 @@ sealed class ProfileState {
 }
 
 final class ProfileLoading extends ProfileState {
-  final bool initial;
-  const ProfileLoading({this.initial = false});
+  const ProfileLoading();
 }
 
 final class ProfileSuccess extends ProfileState {

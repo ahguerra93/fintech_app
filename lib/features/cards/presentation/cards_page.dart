@@ -25,11 +25,11 @@ class CardsPage extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (context) => CardsBloc(context.read<DevToolsCubit>())..add(const FetchCards(initial: true)),
+          create: (context) => CardsBloc(context.read<DevToolsCubit>())..add(const FetchCards()),
         ),
         BlocProvider(
           create: (context) =>
-              RecentTransactionsBloc(context.read<DevToolsCubit>())..add(const FetchRecentTransactions(initial: true)),
+              RecentTransactionsBloc(context.read<DevToolsCubit>())..add(const FetchRecentTransactions()),
         ),
       ],
       child: const _CardsPageBody(),
@@ -75,8 +75,8 @@ class _CardsPageBodyState extends State<_CardsPageBody> {
     }
 
     if (newLocation == AppRoutes.cards) {
-      context.read<CardsBloc>().add(const FetchCards(initial: true));
-      context.read<RecentTransactionsBloc>().add(const FetchRecentTransactions(initial: true));
+      context.read<CardsBloc>().add(const FetchCards());
+      context.read<RecentTransactionsBloc>().add(const FetchRecentTransactions());
     }
 
     _currentLocation = newLocation;
@@ -216,10 +216,6 @@ class _CardsSection extends StatelessWidget {
             (previous is CardsLoading) != (current is CardsLoading) &&
             (previous is! CardsError && current is! CardsError),
         builder: (context, state) {
-          final enableAnimation = switch (state) {
-            CardsLoading(:final initial) => !initial,
-            _ => true,
-          };
           final loading = state is CardsLoading;
           final cards = loading ? _dummyCards : (state as CardsSuccess).cards;
 
@@ -227,7 +223,6 @@ class _CardsSection extends StatelessWidget {
             key: Key('cards_section'),
             enabled: loading,
             enableSwitchAnimation: true,
-            switchAnimationConfig: SwitchAnimationConfig(duration: Duration(milliseconds: enableAnimation ? 350 : 0)),
             child: RepaintBoundary(
               child: cards.isEmpty
                   ? EmptyStateWidget(
@@ -296,10 +291,6 @@ class _RecentTransactionsSection extends StatelessWidget {
           (previous is RecentTransactionsLoading) != (current is RecentTransactionsLoading) &&
           (previous is! RecentTransactionsError && current is! RecentTransactionsError),
       builder: (context, state) {
-        final enableAnimation = switch (state) {
-          RecentTransactionsLoading(:final initial) => !initial,
-          _ => true,
-        };
         final loading = state is RecentTransactionsLoading;
         final transactions = switch (state) {
           RecentTransactionsLoading() => _dummyTransactions,
@@ -310,7 +301,6 @@ class _RecentTransactionsSection extends StatelessWidget {
           key: Key('transactions_cards'),
           enabled: loading,
           enableSwitchAnimation: true,
-          switchAnimationConfig: SwitchAnimationConfig(duration: Duration(milliseconds: enableAnimation ? 350 : 0)),
           child: RepaintBoundary(
             child: transactions.isEmpty
                 ? EmptyStateWidget(key: const ValueKey('empty_transactions'), message: 'No recent transactions')

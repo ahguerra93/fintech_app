@@ -17,7 +17,7 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => HomeBloc(context.read<DevToolsCubit>())..add(FetchHomeData(initial: true)),
+      create: (context) => HomeBloc(context.read<DevToolsCubit>())..add(FetchHomeData()),
       child: const HomePageWidget(),
     );
   }
@@ -61,7 +61,7 @@ class _HomePageWidgetState extends State<HomePageWidget> {
     }
 
     if (newLocation == AppRoutes.home) {
-      context.read<HomeBloc>().add(FetchHomeData(initial: true));
+      context.read<HomeBloc>().add(FetchHomeData());
     }
 
     _currentLocation = newLocation;

@@ -6,6 +6,5 @@ sealed class StatsTransactionsEvent {
 }
 
 final class FetchStatsTransactions extends StatsTransactionsEvent {
-  final bool initial;
-  const FetchStatsTransactions({this.initial = false});
+  const FetchStatsTransactions();
 }

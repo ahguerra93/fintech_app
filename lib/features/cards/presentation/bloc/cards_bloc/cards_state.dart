@@ -6,8 +6,7 @@ sealed class CardsState {
 }
 
 final class CardsLoading extends CardsState {
-  final bool initial;
-  const CardsLoading({this.initial = false});
+  const CardsLoading();
 }
 
 final class CardsSuccess extends CardsState {

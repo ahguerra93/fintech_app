@@ -34,10 +34,6 @@ class RecentPaymentsSection extends StatelessWidget {
               (previous is HomeLoading) != (current is HomeLoading) &&
               (previous is! HomeError && current is! HomeError),
           builder: (context, state) {
-            final enableAnimation = switch (state) {
-              HomeLoading(:final initial) => !initial,
-              _ => true,
-            };
             final loading = state is HomeLoading;
             final transactions = switch (state) {
               HomeSuccess(:final data) => data.recentTransactions,
@@ -47,25 +43,24 @@ class RecentPaymentsSection extends StatelessWidget {
             return Skeletonizer(
               enabled: loading,
               enableSwitchAnimation: true,
-              switchAnimationConfig: SwitchAnimationConfig(duration: Duration(milliseconds: enableAnimation ? 350 : 0)),
               child: RepaintBoundary(
                 child: transactions.isEmpty
                     ? EmptyStateWidget(message: 'No recent payments')
                     : ListView.builder(
-                      shrinkWrap: true,
-                      padding: EdgeInsets.zero,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemCount: transactions.length,
-                      itemBuilder: (context, index) {
-                        final tx = transactions[index];
-                        return TransactionTile(
-                          title: tx.title,
-                          amount: tx.amount,
-                          date: tx.date,
-                          category: tx.category,
-                        );
-                      },
-                    ),
+                        shrinkWrap: true,
+                        padding: EdgeInsets.zero,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemCount: transactions.length,
+                        itemBuilder: (context, index) {
+                          final tx = transactions[index];
+                          return TransactionTile(
+                            title: tx.title,
+                            amount: tx.amount,
+                            date: tx.date,
+                            category: tx.category,
+                          );
+                        },
+                      ),
               ),
             );
           },

@@ -36,10 +36,6 @@ class CardSection extends StatelessWidget {
                 (previous is HomeLoading) != (current is HomeLoading) &&
                 (previous is! HomeError && current is! HomeError),
             builder: (context, state) {
-              final enableAnimation = switch (state) {
-                HomeLoading(:final initial) => !initial,
-                _ => true,
-              };
               final loading = state is HomeLoading;
               final cards = switch (state) {
                 HomeSuccess(:final data) => data.cards,
@@ -50,9 +46,6 @@ class CardSection extends StatelessWidget {
                 key: ValueKey('card_section_skeletonizer_${loading ? 'loading' : 'loaded'}'),
                 enabled: loading,
                 enableSwitchAnimation: true,
-                switchAnimationConfig: SwitchAnimationConfig(
-                  duration: Duration(milliseconds: enableAnimation ? 350 : 0),
-                ),
                 child: cards.isEmpty
                     ? EmptyStateWidget(
                         message: 'No cards added yet',

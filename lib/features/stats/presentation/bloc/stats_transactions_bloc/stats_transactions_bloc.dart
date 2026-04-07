@@ -15,12 +15,12 @@ class StatsTransactionsBloc extends Bloc<StatsTransactionsEvent, StatsTransactio
 
   StatsTransactionsBloc(this._devToolsCubit)
     : _fetchStatsTransactionsUseCase = getIt<FetchStatsTransactionsUseCase>(),
-      super(const StatsTransactionsLoading(initial: true)) {
+      super(const StatsTransactionsLoading()) {
     on<FetchStatsTransactions>(_onFetchStatsTransactions);
   }
 
   Future<void> _onFetchStatsTransactions(FetchStatsTransactions event, Emitter<StatsTransactionsState> emit) async {
-    emit(StatsTransactionsLoading(initial: event.initial));
+    emit(const StatsTransactionsLoading());
     try {
       final responseType = _devToolsCubit.state.responseType;
       if (responseType == ResponseType.error) {

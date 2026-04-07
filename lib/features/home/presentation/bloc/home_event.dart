@@ -6,6 +6,5 @@ sealed class HomeEvent {
 }
 
 final class FetchHomeData extends HomeEvent {
-  final bool initial;
-  const FetchHomeData({this.initial = false});
+  const FetchHomeData();
 }

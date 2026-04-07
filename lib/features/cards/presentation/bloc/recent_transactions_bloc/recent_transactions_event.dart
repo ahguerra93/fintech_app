@@ -6,6 +6,5 @@ sealed class RecentTransactionsEvent {
 }
 
 final class FetchRecentTransactions extends RecentTransactionsEvent {
-  final bool initial;
-  const FetchRecentTransactions({this.initial = false});
+  const FetchRecentTransactions();
 }
