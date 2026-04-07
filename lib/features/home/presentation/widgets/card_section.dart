@@ -41,27 +41,24 @@ class CardSection extends StatelessWidget {
               return Skeletonizer(
                 enabled: loading,
                 enableSwitchAnimation: true,
-                child: switch (state) {
-                  HomeError(:final message) => Center(child: Text(message)),
-                  _ => ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: cards.length,
-                    itemBuilder: (context, index) {
-                      final card = cards[index];
-                      return Padding(
-                        padding: EdgeInsets.only(
-                          left: index == 0 ? AppDimens.spacingMd : AppDimens.spacingSm,
-                          right: index == cards.length - 1 ? AppDimens.spacingMd : AppDimens.spacingSm,
-                        ),
-                        child: CardWidget(
-                          balance: card.balance,
-                          cardNumber: card.cardNumber,
-                          debit: card.type == CardType.debit,
-                        ),
-                      );
-                    },
-                  ),
-                },
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: cards.length,
+                  itemBuilder: (context, index) {
+                    final card = cards[index];
+                    return Padding(
+                      padding: EdgeInsets.only(
+                        left: index == 0 ? AppDimens.spacingMd : AppDimens.spacingSm,
+                        right: index == cards.length - 1 ? AppDimens.spacingMd : AppDimens.spacingSm,
+                      ),
+                      child: CardWidget(
+                        balance: card.balance,
+                        cardNumber: card.cardNumber,
+                        debit: card.type == CardType.debit,
+                      ),
+                    );
+                  },
+                ),
               );
             },
           ),

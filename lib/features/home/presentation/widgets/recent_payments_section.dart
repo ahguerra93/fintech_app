@@ -11,7 +11,7 @@ class RecentPaymentsSection extends StatelessWidget {
   const RecentPaymentsSection({super.key});
 
   static final List<RecentTransactionModel> _loadingTransactions = List.filled(
-    5,
+    3,
     RecentTransactionModel(title: 'Loading', amount: 10000, date: DateTime.now(), category: 'Loading', id: ''),
   );
 
@@ -29,27 +29,29 @@ class RecentPaymentsSection extends StatelessWidget {
         ),
         SizedBox(height: 16.0),
         BlocBuilder<HomeBloc, HomeState>(
-          buildWhen: (previous, current) => (previous is HomeLoading) != (current is HomeLoading),
+          buildWhen: (previous, current) =>
+              (previous is HomeLoading) != (current is HomeLoading) &&
+              (previous is! HomeError && current is! HomeError),
           builder: (context, state) {
             final loading = state is HomeLoading;
-            final transactions = loading ? _loadingTransactions : (state as HomeSuccess).data.recentTransactions;
+            final transactions = switch (state) {
+              HomeSuccess(:final data) => data.recentTransactions,
+              _ => _loadingTransactions,
+            };
 
             return Skeletonizer(
               enabled: loading,
               enableSwitchAnimation: true,
-              child: switch (state) {
-                HomeError(:final message) => Center(child: Text(message)),
-                _ => ListView.builder(
-                  shrinkWrap: true,
-                  padding: EdgeInsets.zero,
-                  physics: NeverScrollableScrollPhysics(),
-                  itemCount: loading ? _loadingTransactions.length : transactions.length,
-                  itemBuilder: (context, index) {
-                    final tx = loading ? _loadingTransactions[index] : transactions[index];
-                    return TransactionTile(title: tx.title, amount: tx.amount, date: tx.date, category: tx.category);
-                  },
-                ),
-              },
+              child: ListView.builder(
+                shrinkWrap: true,
+                padding: EdgeInsets.zero,
+                physics: NeverScrollableScrollPhysics(),
+                itemCount: transactions.length,
+                itemBuilder: (context, index) {
+                  final tx = transactions[index];
+                  return TransactionTile(title: tx.title, amount: tx.amount, date: tx.date, category: tx.category);
+                },
+              ),
             );
           },
         ),

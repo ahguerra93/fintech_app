@@ -21,7 +21,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     emit(const HomeLoading());
     try {
       final responseType = _devToolsCubit.state.responseType;
-      if (responseType == ResponseType.error) throw Exception('Simulated error');
+      if (responseType == ResponseType.error) {
+        await Future.delayed(const Duration(seconds: 1));
+        throw Exception('Simulated error');
+      }
       if (responseType == ResponseType.empty) {
         return emit(HomeSuccess(HomeData(balance: 0, cards: [], recentTransactions: [])));
       }

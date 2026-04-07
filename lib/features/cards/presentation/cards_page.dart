@@ -2,14 +2,18 @@ import 'package:fintech_app/app_colors.dart';
 import 'package:fintech_app/common/app_dimens.dart';
 import 'package:fintech_app/common/widgets/animated/stacked_cards.dart';
 import 'package:fintech_app/common/widgets/cards/card_widget.dart';
+import 'package:fintech_app/common/widgets/error_screen.dart';
 import 'package:fintech_app/common/widgets/section_title.dart';
 import 'package:fintech_app/common/widgets/transaction_tile.dart';
+import 'package:fintech_app/config/routing/router.dart';
 import 'package:fintech_app/features/cards/domain/models/card_model.dart';
 import 'package:fintech_app/features/cards/domain/models/recent_transaction_model.dart';
 import 'package:fintech_app/features/cards/presentation/bloc/cards_bloc/cards_bloc.dart';
 import 'package:fintech_app/features/cards/presentation/bloc/recent_transactions_bloc/recent_transactions_bloc.dart';
+import 'package:fintech_app/features/dev_tools/presentation/cubit/devtools_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class CardsPage extends StatelessWidget {
@@ -17,28 +21,69 @@ class CardsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CardsProviders(child: const _CardsPageBody());
-  }
-}
-
-class CardsProviders extends StatelessWidget {
-  final Widget child;
-  const CardsProviders({required this.child, super.key});
-
-  @override
-  Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (_) => CardsBloc()..add(const FetchCards())),
-        BlocProvider(create: (_) => RecentTransactionsBloc()..add(const FetchRecentTransactions())),
+        BlocProvider(create: (context) => CardsBloc(context.read<DevToolsCubit>())..add(const FetchCards())),
+        BlocProvider(
+          create: (context) =>
+              RecentTransactionsBloc(context.read<DevToolsCubit>())..add(const FetchRecentTransactions()),
+        ),
       ],
-      child: child,
+      child: const _CardsPageBody(),
     );
   }
 }
 
-class _CardsPageBody extends StatelessWidget {
+class _CardsPageBody extends StatefulWidget {
   const _CardsPageBody();
+
+  @override
+  State<_CardsPageBody> createState() => _CardsPageBodyState();
+}
+
+class _CardsPageBodyState extends State<_CardsPageBody> {
+  GoRouterDelegate? _delegate;
+  late String _currentLocation;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    final delegate = GoRouter.of(context).routerDelegate;
+    if (identical(_delegate, delegate)) {
+      return;
+    }
+
+    _delegate?.removeListener(_routeChanged);
+    _delegate = delegate;
+    _currentLocation = delegate.currentConfiguration.uri.path;
+    delegate.addListener(_routeChanged);
+  }
+
+  void _routeChanged() {
+    final delegate = _delegate;
+    if (!mounted || delegate == null) {
+      return;
+    }
+
+    final newLocation = delegate.currentConfiguration.uri.path;
+    if (newLocation == _currentLocation) {
+      return;
+    }
+
+    if (newLocation == AppRoutes.cards) {
+      context.read<CardsBloc>().add(const FetchCards());
+      context.read<RecentTransactionsBloc>().add(const FetchRecentTransactions());
+    }
+
+    _currentLocation = newLocation;
+  }
+
+  @override
+  void dispose() {
+    _delegate?.removeListener(_routeChanged);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,31 +101,57 @@ class _CardsPageBody extends StatelessWidget {
         centerTitle: true,
         elevation: AppDimens.elevationNone,
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: AppDimens.spacingXl, vertical: AppDimens.spacingMd),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _CardsSection(cardSectionHeight: cardSectionHeight, overlap: overlap, theme: theme, themeExt: themeExt),
-              const SizedBox(height: AppDimens.spacingLg),
-              // Actions row
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: const [
-                  _CardAction(label: 'Add funds', icon: Icons.add),
-                  _CardAction(label: 'Freeze Card', icon: Icons.ac_unit),
-                  _CardAction(label: 'Limits', icon: Icons.tune),
-                ],
+      body: BlocBuilder<CardsBloc, CardsState>(
+        buildWhen: (previous, current) => (previous is CardsError) != (current is CardsError),
+        builder: (context, cardsState) {
+          return AnimatedSwitcher(
+            duration: const Duration(milliseconds: 350),
+            child: switch (cardsState) {
+              CardsError(:final message) => ErrorScreen(
+                key: const ValueKey('cards_error'),
+                message: message,
+                onRetry: () {
+                  context.read<CardsBloc>().add(const FetchCards());
+                  context.read<RecentTransactionsBloc>().add(const FetchRecentTransactions());
+                },
               ),
-              const SizedBox(height: AppDimens.spacingXl),
-              // Recent transactions section
-              const SectionTitle(title: 'Recent transactions'),
-              const SizedBox(height: AppDimens.spacingSm),
-              const _RecentTransactionsSection(),
-            ],
-          ),
-        ),
+              _ => Container(
+                height: double.infinity,
+                padding: const EdgeInsets.symmetric(horizontal: AppDimens.spacingXl, vertical: AppDimens.spacingMd),
+                child: SingleChildScrollView(
+                  key: const ValueKey('cards_content'),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      _CardsSection(
+                        cardSectionHeight: cardSectionHeight,
+                        overlap: overlap,
+                        theme: theme,
+                        themeExt: themeExt,
+                      ),
+                      const SizedBox(height: AppDimens.spacingLg),
+                      // Actions row
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: const [
+                          _CardAction(label: 'Add funds', icon: Icons.add),
+                          _CardAction(label: 'Freeze Card', icon: Icons.ac_unit),
+                          _CardAction(label: 'Limits', icon: Icons.tune),
+                        ],
+                      ),
+                      const SizedBox(height: AppDimens.spacingXl),
+                      // Recent transactions section
+                      const SectionTitle(title: 'Recent transactions'),
+                      const SizedBox(height: AppDimens.spacingSm),
+                      const _RecentTransactionsSection(),
+                    ],
+                  ),
+                ),
+              ),
+            },
+          );
+        },
       ),
     );
   }
@@ -138,7 +209,9 @@ class _CardsSection extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppDimens.radiusXl),
       ),
       child: BlocBuilder<CardsBloc, CardsState>(
-        buildWhen: (previous, current) => (previous is CardsLoading) != (current is CardsLoading),
+        buildWhen: (previous, current) =>
+            (previous is CardsLoading) != (current is CardsLoading) &&
+            (previous is! CardsError && current is! CardsError),
         builder: (context, state) {
           final loading = state is CardsLoading;
           final cards = loading ? _dummyCards : (state as CardsSuccess).cards;
@@ -192,7 +265,7 @@ class _RecentTransactionsSection extends StatelessWidget {
   const _RecentTransactionsSection();
 
   static final List<RecentTransactionModel> _dummyTransactions = List.filled(
-    5,
+    3,
     RecentTransactionModel(title: 'Loading', amount: 100.0, date: DateTime.now(), category: 'Loading', id: ''),
   );
 
@@ -200,22 +273,30 @@ class _RecentTransactionsSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<RecentTransactionsBloc, RecentTransactionsState>(
       buildWhen: (previous, current) =>
-          (previous is RecentTransactionsLoading) != (current is RecentTransactionsLoading),
+          (previous is RecentTransactionsLoading) != (current is RecentTransactionsLoading) &&
+          (previous is! RecentTransactionsError && current is! RecentTransactionsError),
       builder: (context, state) {
+        final transactions = switch (state) {
+          RecentTransactionsLoading() => _dummyTransactions,
+          RecentTransactionsSuccess s => s.transactions,
+          _ => const <RecentTransactionModel>[],
+        };
         final loading = state is RecentTransactionsLoading;
-        final transactions = loading ? _dummyTransactions : (state as RecentTransactionsSuccess).transactions;
-
         return Skeletonizer(
+          key: Key('transactions_cards'),
           enabled: loading,
           enableSwitchAnimation: true,
-          child: ListView.builder(
-            itemCount: transactions.length,
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemBuilder: (context, index) {
-              final tx = transactions[index];
-              return TransactionTile(title: tx.title, amount: tx.amount, date: tx.date, category: tx.category);
-            },
+          child: Align(
+            alignment: Alignment.topCenter,
+            child: ListView.builder(
+              itemCount: transactions.length,
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemBuilder: (context, index) {
+                final tx = transactions[index];
+                return TransactionTile(title: tx.title, amount: tx.amount, date: tx.date, category: tx.category);
+              },
+            ),
           ),
         );
       },

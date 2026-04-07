@@ -28,7 +28,10 @@ class BalanceWidget extends StatelessWidget {
                     TextSpan(
                       text: state is HomeLoading
                           ? '\$1,000.00'
-                          : AppFormatters.amount((state as HomeSuccess).data.balance),
+                          : AppFormatters.amount((switch (state) {
+                              HomeSuccess(:final data) => data.balance,
+                              _ => 0,
+                            })),
                       style: Theme.of(context).textTheme.displaySmall?.copyWith(fontWeight: FontWeight.w700),
                     ),
                   ],

@@ -1,8 +1,11 @@
 import 'package:fintech_app/app_colors.dart';
 import 'package:fintech_app/common/app_dimens.dart';
 import 'package:fintech_app/common/app_formatters.dart';
+import 'package:fintech_app/common/widgets/error_screen.dart';
 import 'package:fintech_app/common/widgets/section_title.dart';
 import 'package:fintech_app/common/widgets/transaction_tile.dart';
+import 'package:fintech_app/config/routing/router.dart';
+import 'package:fintech_app/features/dev_tools/presentation/cubit/devtools_cubit.dart';
 import 'package:fintech_app/features/stats/presentation/widgets/stats_bar_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,6 +13,7 @@ import 'package:fintech_app/features/stats/presentation/bloc/graph_data_bloc/gra
 import 'package:fintech_app/features/stats/presentation/bloc/stats_transactions_bloc/stats_transactions_bloc.dart';
 import 'package:fintech_app/features/stats/domain/models/graph_data_model.dart';
 import 'package:fintech_app/features/stats/domain/models/stats_transaction_model.dart';
+import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class StatsPage extends StatelessWidget {
@@ -19,29 +23,100 @@ class StatsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (context) => GraphDataBloc()..add(const FetchGraphData())),
-        BlocProvider(create: (context) => StatsTransactionsBloc()..add(const FetchStatsTransactions())),
+        BlocProvider(create: (context) => GraphDataBloc(context.read<DevToolsCubit>())..add(const FetchGraphData())),
+        BlocProvider(
+          create: (context) =>
+              StatsTransactionsBloc(context.read<DevToolsCubit>())..add(const FetchStatsTransactions()),
+        ),
       ],
       child: const StatsPageWidget(),
     );
   }
 }
 
-class StatsPageWidget extends StatelessWidget {
+class StatsPageWidget extends StatefulWidget {
   const StatsPageWidget({super.key});
+
+  @override
+  State<StatsPageWidget> createState() => _StatsPageWidgetState();
+}
+
+class _StatsPageWidgetState extends State<StatsPageWidget> {
+  GoRouterDelegate? _delegate;
+  late String _currentLocation;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    final delegate = GoRouter.of(context).routerDelegate;
+    if (identical(_delegate, delegate)) {
+      return;
+    }
+
+    _delegate?.removeListener(_routeChanged);
+    _delegate = delegate;
+    _currentLocation = delegate.currentConfiguration.uri.path;
+    delegate.addListener(_routeChanged);
+  }
+
+  void _routeChanged() {
+    final delegate = _delegate;
+    if (!mounted || delegate == null) {
+      return;
+    }
+
+    final newLocation = delegate.currentConfiguration.uri.path;
+    if (newLocation == _currentLocation) {
+      return;
+    }
+
+    if (newLocation == AppRoutes.stats) {
+      context.read<GraphDataBloc>().add(const FetchGraphData());
+      context.read<StatsTransactionsBloc>().add(const FetchStatsTransactions());
+    }
+
+    _currentLocation = newLocation;
+  }
+
+  @override
+  void dispose() {
+    _delegate?.removeListener(_routeChanged);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: DropdownTitle(), elevation: AppDimens.elevationNone),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: AppDimens.spacingMd),
-        child: SingleChildScrollView(
-          child: Column(
-            spacing: AppDimens.spacingMd,
-            children: [const _GraphSection(), const AdditionalInfoBox(), const _TransactionsSection()],
-          ),
-        ),
+      body: BlocBuilder<GraphDataBloc, GraphDataState>(
+        buildWhen: (previous, current) => (previous is GraphDataError) != (current is GraphDataError),
+        builder: (context, state) {
+          return AnimatedSwitcher(
+            duration: const Duration(milliseconds: 350),
+            child: switch (state) {
+              GraphDataError(:final message) => ErrorScreen(
+                key: const ValueKey('stats_error'),
+                message: message,
+                onRetry: () {
+                  context.read<GraphDataBloc>().add(const FetchGraphData());
+                  context.read<StatsTransactionsBloc>().add(const FetchStatsTransactions());
+                },
+              ),
+              _ => Container(
+                key: const ValueKey('stats_content'),
+                height: double.infinity,
+                padding: const EdgeInsets.symmetric(horizontal: AppDimens.spacingMd),
+                child: SingleChildScrollView(
+                  child: Column(
+                    spacing: AppDimens.spacingMd,
+                    children: [const _GraphSection(), const AdditionalInfoBox(), const _TransactionsSection()],
+                  ),
+                ),
+              ),
+            },
+          );
+        },
       ),
     );
   }
@@ -225,7 +300,9 @@ class _GraphSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<GraphDataBloc, GraphDataState>(
-      buildWhen: (previous, current) => (previous is GraphDataLoading) != (current is GraphDataLoading),
+      buildWhen: (previous, current) =>
+          (previous is GraphDataLoading) != (current is GraphDataLoading) &&
+          (previous is! GraphDataError && current is! GraphDataError),
       builder: (context, state) {
         final loading = state is GraphDataLoading;
         final graphData = loading ? _dummyGraphData : (state as GraphDataSuccess).data;
@@ -244,18 +321,23 @@ class _TransactionsSection extends StatelessWidget {
   const _TransactionsSection();
 
   static final List<StatsTransactionModel> _dummyTransactions = List.filled(
-    5,
+    3,
     StatsTransactionModel(title: 'Loading', amount: 100.0, date: DateTime.now(), category: 'Loading', id: ''),
   );
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<StatsTransactionsBloc, StatsTransactionsState>(
-      buildWhen: (previous, current) => (previous is StatsTransactionsLoading) != (current is StatsTransactionsLoading),
+      buildWhen: (previous, current) =>
+          (previous is StatsTransactionsLoading) != (current is StatsTransactionsLoading) &&
+          (previous is! StatsTransactionsError && current is! StatsTransactionsError),
       builder: (context, state) {
+        final transactions = switch (state) {
+          StatsTransactionsLoading() => _dummyTransactions,
+          StatsTransactionsSuccess s => s.transactions,
+          _ => const <StatsTransactionModel>[],
+        };
         final loading = state is StatsTransactionsLoading;
-        final transactions = loading ? _dummyTransactions : (state as StatsTransactionsSuccess).transactions;
-
         return Skeletonizer(
           enabled: loading,
           enableSwitchAnimation: true,

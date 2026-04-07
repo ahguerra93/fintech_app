@@ -1,3 +1,4 @@
+import 'package:fintech_app/common/widgets/error_screen.dart';
 import 'package:fintech_app/config/routing/router.dart';
 import 'package:fintech_app/features/dev_tools/presentation/cubit/devtools_cubit.dart';
 import 'package:fintech_app/features/home/presentation/bloc/home_bloc.dart';
@@ -76,28 +77,44 @@ class _HomePageWidgetState extends State<HomePageWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const HomeAppBar(userName: 'Kimberly'),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 32.0),
-          child: Column(
-            spacing: 16.0,
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: RepaintBoundary(child: BalanceWidget()),
+      body: BlocBuilder<HomeBloc, HomeState>(
+        buildWhen: (previous, current) => (previous is HomeError) != (current is HomeError),
+        builder: (context, state) {
+          return AnimatedSwitcher(
+            duration: const Duration(milliseconds: 350),
+            child: switch (state) {
+              HomeError(:final message) => ErrorScreen(
+                key: const ValueKey('error_home_content'),
+                message: message,
+                onRetry: () => context.read<HomeBloc>().add(FetchHomeData()),
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: RepaintBoundary(child: HomeActions()),
+              _ => SingleChildScrollView(
+                key: const ValueKey('home_content'),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 32.0),
+                  child: Column(
+                    spacing: 16.0,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: RepaintBoundary(child: BalanceWidget()),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: RepaintBoundary(child: HomeActions()),
+                      ),
+                      RepaintBoundary(child: CardSection()),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: RepaintBoundary(child: RecentPaymentsSection()),
+                      ),
+                    ],
+                  ),
+                ),
               ),
-              RepaintBoundary(child: CardSection()),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: RepaintBoundary(child: RecentPaymentsSection()),
-              ),
-            ],
-          ),
-        ),
+            },
+          );
+        },
       ),
     );
   }
