@@ -5,6 +5,7 @@ import 'package:fintech_app/common/widgets/cards/card_widget.dart';
 import 'package:fintech_app/common/widgets/error_screen.dart';
 import 'package:fintech_app/common/widgets/section_title.dart';
 import 'package:fintech_app/common/widgets/transaction_tile.dart';
+import 'package:fintech_app/common/widgets/empty_state.dart';
 import 'package:fintech_app/config/routing/router.dart';
 import 'package:fintech_app/features/cards/domain/models/card_model.dart';
 import 'package:fintech_app/features/cards/domain/models/recent_transaction_model.dart';
@@ -23,10 +24,12 @@ class CardsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (context) => CardsBloc(context.read<DevToolsCubit>())..add(const FetchCards())),
+        BlocProvider(
+          create: (context) => CardsBloc(context.read<DevToolsCubit>())..add(const FetchCards(initial: true)),
+        ),
         BlocProvider(
           create: (context) =>
-              RecentTransactionsBloc(context.read<DevToolsCubit>())..add(const FetchRecentTransactions()),
+              RecentTransactionsBloc(context.read<DevToolsCubit>())..add(const FetchRecentTransactions(initial: true)),
         ),
       ],
       child: const _CardsPageBody(),
@@ -72,8 +75,8 @@ class _CardsPageBodyState extends State<_CardsPageBody> {
     }
 
     if (newLocation == AppRoutes.cards) {
-      context.read<CardsBloc>().add(const FetchCards());
-      context.read<RecentTransactionsBloc>().add(const FetchRecentTransactions());
+      context.read<CardsBloc>().add(const FetchCards(initial: true));
+      context.read<RecentTransactionsBloc>().add(const FetchRecentTransactions(initial: true));
     }
 
     _currentLocation = newLocation;
@@ -213,47 +216,62 @@ class _CardsSection extends StatelessWidget {
             (previous is CardsLoading) != (current is CardsLoading) &&
             (previous is! CardsError && current is! CardsError),
         builder: (context, state) {
+          final enableAnimation = switch (state) {
+            CardsLoading(:final initial) => !initial,
+            _ => true,
+          };
           final loading = state is CardsLoading;
           final cards = loading ? _dummyCards : (state as CardsSuccess).cards;
 
           return Skeletonizer(
+            key: Key('cards_section'),
             enabled: loading,
             enableSwitchAnimation: true,
-            child: StackedCards(
-              expandedHeight: cardSectionHeight - (overlap * 2),
-              overlap: overlap,
-              items: cards
-                  .map(
-                    (card) => CardItem(
-                      title: Text(
-                        card.type.displayName,
-                        style: TextStyle(
-                          color: switch (card.type) {
-                            CardType.debit => theme.colorScheme.onPrimary,
-                            CardType.credit => themeExt.textPrimary,
-                            CardType.platinum => theme.colorScheme.onPrimary,
-                          },
-                        ),
-                      ),
-                      solidColor: switch (card.type) {
-                        CardType.debit => theme.colorScheme.primary,
-                        CardType.credit => theme.colorScheme.secondaryContainer,
-                        CardType.platinum => themeExt.primaryDark,
-                      },
-                      body: CardBody(
-                        foregroundColor: switch (card.type) {
-                          CardType.debit => theme.colorScheme.onPrimary,
-                          CardType.credit => themeExt.textPrimary,
-                          CardType.platinum => theme.colorScheme.onPrimary,
-                        },
-                        cardNumber: card.cardNumber,
-                        balance: card.balance,
-                        watermark: true,
-                      ),
-                    ),
+            switchAnimationConfig: SwitchAnimationConfig(duration: Duration(milliseconds: enableAnimation ? 350 : 0)),
+            child: cards.isEmpty
+                ? EmptyStateWidget(
+                    message: 'No cards added yet',
+                    icon: Icon(Icons.credit_card, size: 48, color: theme.hintColor),
+                    actionLabel: 'Add Card +',
+                    onActionPressed: () {
+                      // Navigate to add card
+                    },
                   )
-                  .toList(),
-            ),
+                : StackedCards(
+                    expandedHeight: cardSectionHeight - (overlap * 2),
+                    overlap: overlap,
+                    items: cards
+                        .map(
+                          (card) => CardItem(
+                            title: Text(
+                              card.type.displayName,
+                              style: TextStyle(
+                                color: switch (card.type) {
+                                  CardType.debit => theme.colorScheme.onPrimary,
+                                  CardType.credit => themeExt.textPrimary,
+                                  CardType.platinum => theme.colorScheme.onPrimary,
+                                },
+                              ),
+                            ),
+                            solidColor: switch (card.type) {
+                              CardType.debit => theme.colorScheme.primary,
+                              CardType.credit => theme.colorScheme.secondaryContainer,
+                              CardType.platinum => themeExt.primaryDark,
+                            },
+                            body: CardBody(
+                              foregroundColor: switch (card.type) {
+                                CardType.debit => theme.colorScheme.onPrimary,
+                                CardType.credit => themeExt.textPrimary,
+                                CardType.platinum => theme.colorScheme.onPrimary,
+                              },
+                              cardNumber: card.cardNumber,
+                              balance: card.balance,
+                              watermark: true,
+                            ),
+                          ),
+                        )
+                        .toList(),
+                  ),
           );
         },
       ),
@@ -276,27 +294,43 @@ class _RecentTransactionsSection extends StatelessWidget {
           (previous is RecentTransactionsLoading) != (current is RecentTransactionsLoading) &&
           (previous is! RecentTransactionsError && current is! RecentTransactionsError),
       builder: (context, state) {
+        final enableAnimation = switch (state) {
+          RecentTransactionsLoading(:final initial) => !initial,
+          _ => true,
+        };
+        final loading = state is RecentTransactionsLoading;
         final transactions = switch (state) {
           RecentTransactionsLoading() => _dummyTransactions,
           RecentTransactionsSuccess s => s.transactions,
           _ => const <RecentTransactionModel>[],
         };
-        final loading = state is RecentTransactionsLoading;
         return Skeletonizer(
           key: Key('transactions_cards'),
           enabled: loading,
           enableSwitchAnimation: true,
-          child: Align(
-            alignment: Alignment.topCenter,
-            child: ListView.builder(
-              itemCount: transactions.length,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemBuilder: (context, index) {
-                final tx = transactions[index];
-                return TransactionTile(title: tx.title, amount: tx.amount, date: tx.date, category: tx.category);
-              },
-            ),
+          switchAnimationConfig: SwitchAnimationConfig(duration: Duration(milliseconds: enableAnimation ? 350 : 0)),
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 300),
+            child: transactions.isEmpty
+                ? EmptyStateWidget(key: const ValueKey('empty_transactions'), message: 'No recent transactions')
+                : Align(
+                    key: const ValueKey('transactions_list'),
+                    alignment: Alignment.topCenter,
+                    child: ListView.builder(
+                      itemCount: transactions.length,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        final tx = transactions[index];
+                        return TransactionTile(
+                          title: tx.title,
+                          amount: tx.amount,
+                          date: tx.date,
+                          category: tx.category,
+                        );
+                      },
+                    ),
+                  ),
           ),
         );
       },

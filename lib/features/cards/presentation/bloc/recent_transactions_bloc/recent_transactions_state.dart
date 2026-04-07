@@ -6,7 +6,8 @@ sealed class RecentTransactionsState {
 }
 
 final class RecentTransactionsLoading extends RecentTransactionsState {
-  const RecentTransactionsLoading();
+  final bool initial;
+  const RecentTransactionsLoading({this.initial = false});
 }
 
 final class RecentTransactionsSuccess extends RecentTransactionsState {
@@ -17,4 +18,8 @@ final class RecentTransactionsSuccess extends RecentTransactionsState {
 final class RecentTransactionsError extends RecentTransactionsState {
   final String message;
   const RecentTransactionsError(this.message);
+}
+
+final class RecentTransactionsEmpty extends RecentTransactionsState {
+  const RecentTransactionsEmpty();
 }

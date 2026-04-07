@@ -1,5 +1,6 @@
 import 'package:fintech_app/common/widgets/section_title.dart';
 import 'package:fintech_app/common/widgets/transaction_tile.dart';
+import 'package:fintech_app/common/widgets/empty_state.dart';
 import 'package:fintech_app/features/home/presentation/bloc/home_bloc.dart';
 import 'package:flutter/material.dart';
 
@@ -33,6 +34,10 @@ class RecentPaymentsSection extends StatelessWidget {
               (previous is HomeLoading) != (current is HomeLoading) &&
               (previous is! HomeError && current is! HomeError),
           builder: (context, state) {
+            final enableAnimation = switch (state) {
+              HomeLoading(:final initial) => !initial,
+              _ => true,
+            };
             final loading = state is HomeLoading;
             final transactions = switch (state) {
               HomeSuccess(:final data) => data.recentTransactions,
@@ -42,16 +47,24 @@ class RecentPaymentsSection extends StatelessWidget {
             return Skeletonizer(
               enabled: loading,
               enableSwitchAnimation: true,
-              child: ListView.builder(
-                shrinkWrap: true,
-                padding: EdgeInsets.zero,
-                physics: NeverScrollableScrollPhysics(),
-                itemCount: transactions.length,
-                itemBuilder: (context, index) {
-                  final tx = transactions[index];
-                  return TransactionTile(title: tx.title, amount: tx.amount, date: tx.date, category: tx.category);
-                },
-              ),
+              switchAnimationConfig: SwitchAnimationConfig(duration: Duration(milliseconds: enableAnimation ? 350 : 0)),
+              child: transactions.isEmpty
+                  ? EmptyStateWidget(message: 'No recent payments')
+                  : ListView.builder(
+                      shrinkWrap: true,
+                      padding: EdgeInsets.zero,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemCount: transactions.length,
+                      itemBuilder: (context, index) {
+                        final tx = transactions[index];
+                        return TransactionTile(
+                          title: tx.title,
+                          amount: tx.amount,
+                          date: tx.date,
+                          category: tx.category,
+                        );
+                      },
+                    ),
             );
           },
         ),

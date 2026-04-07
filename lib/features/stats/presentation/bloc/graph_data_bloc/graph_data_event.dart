@@ -6,5 +6,6 @@ sealed class GraphDataEvent {
 }
 
 final class FetchGraphData extends GraphDataEvent {
-  const FetchGraphData();
+  final bool initial;
+  const FetchGraphData({this.initial = false});
 }

@@ -4,6 +4,7 @@ import 'package:fintech_app/common/app_formatters.dart';
 import 'package:fintech_app/common/widgets/error_screen.dart';
 import 'package:fintech_app/common/widgets/section_title.dart';
 import 'package:fintech_app/common/widgets/transaction_tile.dart';
+import 'package:fintech_app/common/widgets/empty_state.dart';
 import 'package:fintech_app/config/routing/router.dart';
 import 'package:fintech_app/features/dev_tools/presentation/cubit/devtools_cubit.dart';
 import 'package:fintech_app/features/stats/presentation/widgets/stats_bar_chart.dart';
@@ -23,10 +24,12 @@ class StatsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (context) => GraphDataBloc(context.read<DevToolsCubit>())..add(const FetchGraphData())),
+        BlocProvider(
+          create: (context) => GraphDataBloc(context.read<DevToolsCubit>())..add(const FetchGraphData(initial: true)),
+        ),
         BlocProvider(
           create: (context) =>
-              StatsTransactionsBloc(context.read<DevToolsCubit>())..add(const FetchStatsTransactions()),
+              StatsTransactionsBloc(context.read<DevToolsCubit>())..add(const FetchStatsTransactions(initial: true)),
         ),
       ],
       child: const StatsPageWidget(),
@@ -72,8 +75,8 @@ class _StatsPageWidgetState extends State<StatsPageWidget> {
     }
 
     if (newLocation == AppRoutes.stats) {
-      context.read<GraphDataBloc>().add(const FetchGraphData());
-      context.read<StatsTransactionsBloc>().add(const FetchStatsTransactions());
+      context.read<GraphDataBloc>().add(const FetchGraphData(initial: true));
+      context.read<StatsTransactionsBloc>().add(const FetchStatsTransactions(initial: true));
     }
 
     _currentLocation = newLocation;
@@ -218,46 +221,140 @@ class MoneyLabel extends StatelessWidget {
   }
 }
 
-class AdditionalInfoBox extends StatelessWidget {
+class AdditionalInfoBox extends StatefulWidget {
   const AdditionalInfoBox({super.key});
+
+  static final List<_InfoItem> _infoItems = [
+    _InfoItem(icon: Icons.trending_up, text: '30% more than last week'),
+    _InfoItem(
+      icon: Icons.attach_money,
+      text: 'Biggest Expense was: \$${AppFormatters.amount(1000)} on Shopping (Amazon)',
+    ),
+  ];
+
+  @override
+  State<AdditionalInfoBox> createState() => _AdditionalInfoBoxState();
+}
+
+class _AdditionalInfoBoxState extends State<AdditionalInfoBox> {
+  late PageController _pageController;
+  int _currentPage = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController();
+    _pageController.addListener(() {
+      setState(() {
+        _currentPage = _pageController.page?.round() ?? 0;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<GraphDataBloc, GraphDataState>(
+      buildWhen: (previous, current) =>
+          (previous is GraphDataLoading) != (current is GraphDataLoading) &&
+          (previous is! GraphDataError && current is! GraphDataError),
+      builder: (context, state) {
+        final enableAnimation = switch (state) {
+          GraphDataLoading(:final initial) => !initial,
+          _ => true,
+        };
+        return Column(
+          spacing: AppDimens.spacingMd,
+          children: [
+            Skeletonizer(
+              enableSwitchAnimation: true,
+              switchAnimationConfig: SwitchAnimationConfig(duration: Duration(milliseconds: enableAnimation ? 350 : 0)),
+              enabled: state is GraphDataLoading,
+              child: SizedBox(
+                height: 80,
+                child: PageView.builder(
+                  controller: _pageController,
+                  itemCount: AdditionalInfoBox._infoItems.length,
+                  itemBuilder: (context, index) {
+                    final item = AdditionalInfoBox._infoItems[index];
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: AppDimens.spacingSm),
+                      child: _InfoItemCard(item: item),
+                    );
+                  },
+                ),
+              ),
+            ),
+            // Pagination dots
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              spacing: AppDimens.spacingSm,
+              children: List.generate(
+                AdditionalInfoBox._infoItems.length,
+                (index) => _PaginationDot(isActive: _currentPage == index),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _PaginationDot extends StatelessWidget {
+  final bool isActive;
+
+  const _PaginationDot({required this.isActive});
+
+  @override
+  Widget build(BuildContext context) {
+    final themeExt = Theme.of(context).extension<AppColorTheme>()!;
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      width: isActive ? 24 : 8,
+      height: 8,
+      decoration: BoxDecoration(
+        color: isActive ? themeExt.primary : themeExt.primary.withValues(alpha: 0.4),
+        borderRadius: BorderRadius.circular(4),
+      ),
+    );
+  }
+}
+
+class _InfoItem {
+  final IconData icon;
+  final String text;
+
+  const _InfoItem({required this.icon, required this.text});
+}
+
+class _InfoItemCard extends StatelessWidget {
+  final _InfoItem item;
+
+  const _InfoItemCard({required this.item});
 
   @override
   Widget build(BuildContext context) {
     final themeExt = Theme.of(context).extension<AppColorTheme>()!;
     return Container(
       decoration: BoxDecoration(color: themeExt.primary, borderRadius: BorderRadius.circular(AppDimens.radiusMd)),
-      padding: const EdgeInsets.symmetric(vertical: AppDimens.spacingSm, horizontal: AppDimens.spacingMd),
-      child: Column(
-        spacing: AppDimens.spacingSm,
+      padding: const EdgeInsets.symmetric(vertical: AppDimens.spacingMd, horizontal: AppDimens.spacingLg),
+      child: Row(
+        spacing: AppDimens.spacingMd,
         children: [
-          Row(
-            spacing: AppDimens.spacingSm,
-            children: [
-              Icon(Icons.trending_up, color: themeExt.background),
-              Flexible(
-                child: Text(
-                  '30% more than last week',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.titleMedium!.copyWith(color: themeExt.background, fontWeight: FontWeight.bold),
-                ),
-              ),
-            ],
-          ),
-          Divider(),
-          Row(
-            spacing: AppDimens.spacingSm,
-            children: [
-              Icon(Icons.attach_money, color: themeExt.background),
-              Flexible(
-                child: Text(
-                  'Biggest Expense was: \$${AppFormatters.amount(1000)} on Shopping (Amazon)',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.titleMedium!.copyWith(color: themeExt.background, fontWeight: FontWeight.bold),
-                ),
-              ),
-            ],
+          Icon(item.icon, color: themeExt.background, size: 28),
+          Flexible(
+            child: Text(
+              item.text,
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium!.copyWith(color: themeExt.background, fontWeight: FontWeight.bold),
+            ),
           ),
         ],
       ),
@@ -304,12 +401,16 @@ class _GraphSection extends StatelessWidget {
           (previous is GraphDataLoading) != (current is GraphDataLoading) &&
           (previous is! GraphDataError && current is! GraphDataError),
       builder: (context, state) {
+        final enableAnimation = switch (state) {
+          GraphDataLoading(:final initial) => !initial,
+          _ => true,
+        };
         final loading = state is GraphDataLoading;
         final graphData = loading ? _dummyGraphData : (state as GraphDataSuccess).data;
 
         return Skeletonizer(
           enabled: loading,
-          enableSwitchAnimation: true,
+          enableSwitchAnimation: enableAnimation,
           child: ChartContainer(graphData: graphData),
         );
       },
@@ -332,6 +433,10 @@ class _TransactionsSection extends StatelessWidget {
           (previous is StatsTransactionsLoading) != (current is StatsTransactionsLoading) &&
           (previous is! StatsTransactionsError && current is! StatsTransactionsError),
       builder: (context, state) {
+        final enableAnimation = switch (state) {
+          StatsTransactionsLoading(:final initial) => !initial,
+          _ => true,
+        };
         final transactions = switch (state) {
           StatsTransactionsLoading() => _dummyTransactions,
           StatsTransactionsSuccess s => s.transactions,
@@ -340,8 +445,13 @@ class _TransactionsSection extends StatelessWidget {
         final loading = state is StatsTransactionsLoading;
         return Skeletonizer(
           enabled: loading,
-          enableSwitchAnimation: true,
-          child: TransactionListSection(transactions: transactions),
+          enableSwitchAnimation: enableAnimation,
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 300),
+            child: transactions.isEmpty
+                ? EmptyStateWidget(key: const ValueKey('empty_stats_transactions'), message: 'No transactions')
+                : TransactionListSection(key: const ValueKey('stats_transactions_list'), transactions: transactions),
+          ),
         );
       },
     );

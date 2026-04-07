@@ -15,10 +15,17 @@ class BalanceWidget extends StatelessWidget {
         Text('Your Balance', style: Theme.of(context).textTheme.titleMedium),
 
         BlocBuilder<HomeBloc, HomeState>(
-          buildWhen: (previous, current) => (previous is HomeLoading) != (current is HomeLoading),
+          buildWhen: (previous, current) =>
+              (previous is HomeLoading) != (current is HomeLoading) &&
+              (previous is! HomeError && current is! HomeError),
           builder: (context, state) {
+            final enableAnimation = switch (state) {
+              HomeLoading(:final initial) => !initial,
+              _ => true,
+            };
             return Skeletonizer(
               enableSwitchAnimation: true,
+              switchAnimationConfig: SwitchAnimationConfig(duration: Duration(milliseconds: enableAnimation ? 350 : 0)),
               enabled: state is HomeLoading,
               child: Text.rich(
                 TextSpan(

@@ -6,7 +6,8 @@ sealed class HomeState {
 }
 
 final class HomeLoading extends HomeState {
-  const HomeLoading();
+  final bool initial;
+  const HomeLoading({this.initial = false});
 }
 
 final class HomeSuccess extends HomeState {

@@ -13,12 +13,14 @@ class CardsBloc extends Bloc<CardsEvent, CardsState> {
   final FetchCardsUseCase _fetchCardsUseCase;
   final DevToolsCubit _devToolsCubit;
 
-  CardsBloc(this._devToolsCubit) : _fetchCardsUseCase = getIt<FetchCardsUseCase>(), super(const CardsLoading()) {
+  CardsBloc(this._devToolsCubit)
+    : _fetchCardsUseCase = getIt<FetchCardsUseCase>(),
+      super(const CardsLoading(initial: true)) {
     on<FetchCards>(_onFetchCards);
   }
 
   Future<void> _onFetchCards(FetchCards event, Emitter<CardsState> emit) async {
-    emit(const CardsLoading());
+    emit(CardsLoading(initial: event.initial));
     try {
       final responseType = _devToolsCubit.state.responseType;
       if (responseType == ResponseType.error) {

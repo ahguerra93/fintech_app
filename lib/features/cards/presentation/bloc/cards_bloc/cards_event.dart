@@ -6,5 +6,6 @@ sealed class CardsEvent {
 }
 
 final class FetchCards extends CardsEvent {
-  const FetchCards();
+  final bool initial;
+  const FetchCards({this.initial = false});
 }

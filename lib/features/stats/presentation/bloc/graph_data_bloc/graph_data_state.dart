@@ -6,7 +6,8 @@ sealed class GraphDataState {
 }
 
 final class GraphDataLoading extends GraphDataState {
-  const GraphDataLoading();
+  final bool initial;
+  const GraphDataLoading({this.initial = false});
 }
 
 final class GraphDataSuccess extends GraphDataState {

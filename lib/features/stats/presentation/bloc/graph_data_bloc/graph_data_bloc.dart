@@ -15,12 +15,12 @@ class GraphDataBloc extends Bloc<GraphDataEvent, GraphDataState> {
 
   GraphDataBloc(this._devToolsCubit)
     : _fetchGraphDataUseCase = getIt<FetchGraphDataUseCase>(),
-      super(const GraphDataLoading()) {
+      super(const GraphDataLoading(initial: true)) {
     on<FetchGraphData>(_onFetchGraphData);
   }
 
   Future<void> _onFetchGraphData(FetchGraphData event, Emitter<GraphDataState> emit) async {
-    emit(const GraphDataLoading());
+    emit(GraphDataLoading(initial: event.initial));
     try {
       final responseType = _devToolsCubit.state.responseType;
       if (responseType == ResponseType.error) {

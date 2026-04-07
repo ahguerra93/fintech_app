@@ -3,6 +3,7 @@ import 'package:fintech_app/common/app_assets.dart';
 import 'package:fintech_app/common/app_dimens.dart';
 import 'package:fintech_app/common/widgets/cards/card_widget.dart';
 import 'package:fintech_app/common/widgets/section_title.dart';
+import 'package:fintech_app/common/widgets/empty_state.dart';
 import 'package:fintech_app/features/home/presentation/bloc/home_bloc.dart';
 import 'package:flutter/material.dart';
 
@@ -31,8 +32,14 @@ class CardSection extends StatelessWidget {
         SizedBox(
           height: 180,
           child: BlocBuilder<HomeBloc, HomeState>(
-            buildWhen: (previous, current) => (previous is HomeLoading) != (current is HomeLoading),
+            buildWhen: (previous, current) =>
+                (previous is HomeLoading) != (current is HomeLoading) &&
+                (previous is! HomeError && current is! HomeError),
             builder: (context, state) {
+              final enableAnimation = switch (state) {
+                HomeLoading(:final initial) => !initial,
+                _ => true,
+              };
               final loading = state is HomeLoading;
               final cards = switch (state) {
                 HomeSuccess(:final data) => data.cards,
@@ -40,25 +47,34 @@ class CardSection extends StatelessWidget {
               };
               return Skeletonizer(
                 enabled: loading,
-                enableSwitchAnimation: true,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: cards.length,
-                  itemBuilder: (context, index) {
-                    final card = cards[index];
-                    return Padding(
-                      padding: EdgeInsets.only(
-                        left: index == 0 ? AppDimens.spacingMd : AppDimens.spacingSm,
-                        right: index == cards.length - 1 ? AppDimens.spacingMd : AppDimens.spacingSm,
+                enableSwitchAnimation: enableAnimation,
+                child: cards.isEmpty
+                    ? EmptyStateWidget(
+                        message: 'No cards added yet',
+                        // icon: Icon(Icons.credit_card, size: 48, color: Theme.of(context).hintColor),
+                        actionLabel: 'Add Card +',
+                        onActionPressed: () {
+                          // Navigate to add card
+                        },
+                      )
+                    : ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: cards.length,
+                        itemBuilder: (context, index) {
+                          final card = cards[index];
+                          return Padding(
+                            padding: EdgeInsets.only(
+                              left: index == 0 ? AppDimens.spacingMd : AppDimens.spacingSm,
+                              right: index == cards.length - 1 ? AppDimens.spacingMd : AppDimens.spacingSm,
+                            ),
+                            child: CardWidget(
+                              balance: card.balance,
+                              cardNumber: card.cardNumber,
+                              debit: card.type == CardType.debit,
+                            ),
+                          );
+                        },
                       ),
-                      child: CardWidget(
-                        balance: card.balance,
-                        cardNumber: card.cardNumber,
-                        debit: card.type == CardType.debit,
-                      ),
-                    );
-                  },
-                ),
               );
             },
           ),

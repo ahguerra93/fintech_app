@@ -13,12 +13,14 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final FetchHomeDataUseCase _fetchHomeDataUseCase;
   final DevToolsCubit _devToolsCubit;
 
-  HomeBloc(this._devToolsCubit) : _fetchHomeDataUseCase = getIt<FetchHomeDataUseCase>(), super(const HomeLoading()) {
+  HomeBloc(this._devToolsCubit)
+    : _fetchHomeDataUseCase = getIt<FetchHomeDataUseCase>(),
+      super(const HomeLoading(initial: true)) {
     on<FetchHomeData>(_onFetchHomeData);
   }
 
   Future<void> _onFetchHomeData(FetchHomeData event, Emitter<HomeState> emit) async {
-    emit(const HomeLoading());
+    emit(HomeLoading(initial: event.initial));
     try {
       final responseType = _devToolsCubit.state.responseType;
       if (responseType == ResponseType.error) {

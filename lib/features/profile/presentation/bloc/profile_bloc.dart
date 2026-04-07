@@ -15,12 +15,12 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
   ProfileBloc(this._devToolsCubit)
     : _fetchProfileDataUseCase = getIt<FetchProfileDataUseCase>(),
-      super(const ProfileLoading()) {
+      super(const ProfileLoading(initial: true)) {
     on<FetchProfileData>(_onFetchProfileData);
   }
 
   Future<void> _onFetchProfileData(FetchProfileData event, Emitter<ProfileState> emit) async {
-    emit(const ProfileLoading());
+    emit(ProfileLoading(initial: event.initial));
     try {
       final responseType = _devToolsCubit.state.responseType;
       if (responseType == ResponseType.error) {

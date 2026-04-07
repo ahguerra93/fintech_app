@@ -16,7 +16,7 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => ProfileBloc(context.read<DevToolsCubit>())..add(const FetchProfileData()),
+      create: (context) => ProfileBloc(context.read<DevToolsCubit>())..add(const FetchProfileData(initial: true)),
       child: const ProfilePageWidget(),
     );
   }
@@ -60,7 +60,7 @@ class _ProfilePageWidgetState extends State<ProfilePageWidget> {
     }
 
     if (newLocation == AppRoutes.profile) {
-      context.read<ProfileBloc>().add(const FetchProfileData());
+      context.read<ProfileBloc>().add(const FetchProfileData(initial: true));
     }
 
     _currentLocation = newLocation;
@@ -245,7 +245,6 @@ class _UserInfoSection extends StatelessWidget {
           (previous is ProfileLoading) != (current is ProfileLoading) ||
           (previous is ProfileError) != (current is ProfileError),
       builder: (context, state) {
-        final theme = Theme.of(context);
         final themeExt = Theme.of(context).extension<AppColorTheme>()!;
         final loading = state is ProfileLoading;
         final isError = state is ProfileError;
@@ -255,7 +254,7 @@ class _UserInfoSection extends StatelessWidget {
           crossFadeState: isError ? CrossFadeState.showFirst : CrossFadeState.showSecond,
           firstChild: isError
               ? ErrorScreen(
-                  message: (state as ProfileError).message,
+                  message: (state).message,
                   onRetry: () => context.read<ProfileBloc>().add(const FetchProfileData()),
                 )
               : const SizedBox.shrink(),
@@ -279,6 +278,11 @@ class _UserInfoContent extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
+    final enableAnimation = switch (state) {
+      ProfileLoading(:final initial) => !initial,
+      _ => true,
+    };
+
     final dummyName = 'Loading User';
     final dummyEmail = 'user@example.com';
     final dummyAccountId = 'ACC123456';
@@ -290,6 +294,7 @@ class _UserInfoContent extends StatelessWidget {
     return Skeletonizer(
       enabled: loading,
       enableSwitchAnimation: true,
+      switchAnimationConfig: SwitchAnimationConfig(duration: Duration(milliseconds: enableAnimation ? 350 : 0)),
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: AppDimens.spacingMd, horizontal: AppDimens.spacingLg),
         decoration: BoxDecoration(
@@ -304,7 +309,7 @@ class _UserInfoContent extends StatelessWidget {
               radius: AppDimens.iconLg,
               backgroundColor: themeExt.primary,
               child: Text(
-                userName.split(' ').map((e) => e[0]).take(2).join(),
+                userName.isNotEmpty ? userName.split(' ').map((e) => e[0]).take(2).join() : '?',
                 style: theme.textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: theme.colorScheme.onPrimary,

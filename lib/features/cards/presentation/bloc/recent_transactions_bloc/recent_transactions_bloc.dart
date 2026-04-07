@@ -14,12 +14,12 @@ class RecentTransactionsBloc extends Bloc<RecentTransactionsEvent, RecentTransac
 
   RecentTransactionsBloc(this._devToolsCubit)
     : _fetchRecentTransactionsUseCase = getIt<FetchRecentTransactionsUseCase>(),
-      super(const RecentTransactionsLoading()) {
+      super(const RecentTransactionsLoading(initial: true)) {
     on<FetchRecentTransactions>(_onFetchRecentTransactions);
   }
 
   Future<void> _onFetchRecentTransactions(FetchRecentTransactions event, Emitter<RecentTransactionsState> emit) async {
-    emit(const RecentTransactionsLoading());
+    emit(RecentTransactionsLoading(initial: event.initial));
     try {
       final responseType = _devToolsCubit.state.responseType;
       if (responseType == ResponseType.error) {
@@ -27,7 +27,7 @@ class RecentTransactionsBloc extends Bloc<RecentTransactionsEvent, RecentTransac
         throw Exception('Simulated error');
       }
       if (responseType == ResponseType.empty) {
-        return emit(const RecentTransactionsSuccess([]));
+        return emit(const RecentTransactionsEmpty());
       }
       final transactions = await _fetchRecentTransactionsUseCase();
       emit(RecentTransactionsSuccess(transactions));

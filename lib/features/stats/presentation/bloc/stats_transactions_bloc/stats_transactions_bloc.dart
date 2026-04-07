@@ -15,12 +15,12 @@ class StatsTransactionsBloc extends Bloc<StatsTransactionsEvent, StatsTransactio
 
   StatsTransactionsBloc(this._devToolsCubit)
     : _fetchStatsTransactionsUseCase = getIt<FetchStatsTransactionsUseCase>(),
-      super(const StatsTransactionsLoading()) {
+      super(const StatsTransactionsLoading(initial: true)) {
     on<FetchStatsTransactions>(_onFetchStatsTransactions);
   }
 
   Future<void> _onFetchStatsTransactions(FetchStatsTransactions event, Emitter<StatsTransactionsState> emit) async {
-    emit(const StatsTransactionsLoading());
+    emit(StatsTransactionsLoading(initial: event.initial));
     try {
       final responseType = _devToolsCubit.state.responseType;
       if (responseType == ResponseType.error) {
@@ -28,7 +28,7 @@ class StatsTransactionsBloc extends Bloc<StatsTransactionsEvent, StatsTransactio
         throw Exception('Simulated error');
       }
       if (responseType == ResponseType.empty) {
-        return emit(const StatsTransactionsSuccess([]));
+        return emit(const StatsTransactionsEmpty());
       }
       final transactions = await _fetchStatsTransactionsUseCase();
       emit(StatsTransactionsSuccess(transactions));

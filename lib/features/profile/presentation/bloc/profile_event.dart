@@ -6,5 +6,6 @@ sealed class ProfileEvent {
 }
 
 final class FetchProfileData extends ProfileEvent {
-  const FetchProfileData();
+  final bool initial;
+  const FetchProfileData({this.initial = false});
 }
