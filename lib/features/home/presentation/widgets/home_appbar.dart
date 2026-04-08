@@ -1,5 +1,8 @@
 import 'package:fintech_app/app_colors.dart';
+import 'package:fintech_app/common/app_dimens.dart';
+import 'package:fintech_app/config/routing/router.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
   const HomeAppBar({super.key, required this.userName});
@@ -17,10 +20,7 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: AppBar(
-        leading: CircleAvatar(
-          backgroundColor: themeExt.mutedSurfaceAccent,
-          child: Icon(Icons.person, color: themeExt.textPrimary),
-        ),
+        leading: _ProfileIcon(),
         title: Text.rich(
           TextSpan(
             style: theme.textTheme.titleMedium,
@@ -40,6 +40,28 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
             icon: Icon(Icons.notifications_outlined, color: themeExt.textPrimary),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _ProfileIcon extends StatelessWidget {
+  const _ProfileIcon({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final color = theme.colorScheme.primary;
+    return InkWell(
+      onTap: () {
+        context.go(AppRoutes.profile);
+      },
+
+      borderRadius: BorderRadius.circular(AppDimens.radiusFull),
+      child: CircleAvatar(
+        radius: 50,
+        backgroundColor: color.withValues(alpha: 0.1),
+        child: Icon(Icons.person, color: color),
       ),
     );
   }

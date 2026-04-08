@@ -1,3 +1,4 @@
+import 'package:fintech_app/common/app_dimens.dart';
 import 'package:flutter/material.dart';
 
 class SectionTitle extends StatelessWidget {
@@ -16,6 +17,7 @@ class SectionTitle extends StatelessWidget {
         if (subtitle != null)
           InkWell(
             onTap: onTap,
+            borderRadius: BorderRadius.circular(AppDimens.radiusMd),
             child: Text(
               subtitle!,
               style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Theme.of(context).colorScheme.primary),

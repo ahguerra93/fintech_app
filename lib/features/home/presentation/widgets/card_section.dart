@@ -106,25 +106,33 @@ class CardWidget extends StatelessWidget {
             borderRadius: BorderRadius.circular(AppDimens.radiusXl),
             color: debit ? themeExt.softAccent : themeExt.primary,
           ),
-          child: Padding(
-            padding: const EdgeInsets.all(AppDimens.spacingMd),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  debit ? 'Debit Card' : 'Credit Card',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.titleLarge?.copyWith(color: debit ? null : onSurface, fontWeight: FontWeight.bold),
+          child: Material(
+            color: Colors.transparent,
+
+            child: InkWell(
+              onTap: () {},
+              borderRadius: BorderRadius.circular(AppDimens.radiusXl),
+              child: Padding(
+                padding: const EdgeInsets.all(AppDimens.spacingMd),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      debit ? 'Debit Card' : 'Credit Card',
+                      style: Theme.of(
+                        context,
+                      ).textTheme.titleLarge?.copyWith(color: debit ? null : onSurface, fontWeight: FontWeight.bold),
+                    ),
+                    CardBody(
+                      balance: balance,
+                      cardNumber: cardNumber,
+                      foregroundColor: debit ? themeExt.textPrimary : onSurface,
+                      hidden: hidden,
+                    ),
+                  ],
                 ),
-                CardBody(
-                  balance: balance,
-                  cardNumber: cardNumber,
-                  foregroundColor: debit ? themeExt.textPrimary : onSurface,
-                  hidden: hidden,
-                ),
-              ],
+              ),
             ),
           ),
         ),

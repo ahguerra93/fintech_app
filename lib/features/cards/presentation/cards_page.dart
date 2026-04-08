@@ -170,10 +170,14 @@ class _CardAction extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        CircleAvatar(
-          radius: AppDimens.iconLg,
-          backgroundColor: color.withValues(alpha: 0.1),
-          child: Icon(icon, color: color, size: AppDimens.iconLg),
+        InkWell(
+          onTap: () {},
+          borderRadius: BorderRadius.circular(AppDimens.radiusFull),
+          child: CircleAvatar(
+            radius: AppDimens.iconLg,
+            backgroundColor: color.withValues(alpha: 0.1),
+            child: Icon(icon, color: color, size: AppDimens.iconLg),
+          ),
         ),
         const SizedBox(height: AppDimens.spacingSm),
         Text(label, style: theme.textTheme.bodyMedium?.copyWith(color: color)),

@@ -338,20 +338,29 @@ class _InfoItemCard extends StatelessWidget {
     final themeExt = Theme.of(context).extension<AppColorTheme>()!;
     return Container(
       decoration: BoxDecoration(color: themeExt.primary, borderRadius: BorderRadius.circular(AppDimens.radiusMd)),
-      padding: const EdgeInsets.symmetric(vertical: AppDimens.spacingMd, horizontal: AppDimens.spacingLg),
-      child: Row(
-        spacing: AppDimens.spacingMd,
-        children: [
-          Icon(item.icon, color: themeExt.background, size: 28),
-          Flexible(
-            child: Text(
-              item.text,
-              style: Theme.of(
-                context,
-              ).textTheme.titleMedium!.copyWith(color: themeExt.background, fontWeight: FontWeight.bold),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(AppDimens.radiusMd),
+          onTap: () {},
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: AppDimens.spacingMd, horizontal: AppDimens.spacingLg),
+            child: Row(
+              spacing: AppDimens.spacingMd,
+              children: [
+                Icon(item.icon, color: themeExt.background, size: 28),
+                Flexible(
+                  child: Text(
+                    item.text,
+                    style: Theme.of(
+                      context,
+                    ).textTheme.titleMedium!.copyWith(color: themeExt.background, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }

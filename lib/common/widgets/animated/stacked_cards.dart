@@ -97,13 +97,16 @@ class _StackedCardsState extends State<StackedCards> {
             left: 20,
             right: 20,
             height: cardH,
-            child: GestureDetector(
-              onTap: () => _bringToFront(item),
-              child: ClipRRect(
-                borderRadius: item.borderRadius ?? BorderRadius.circular(widget.cardBorderRadius),
-                child: Container(
-                  decoration: bg,
-                  child: item == _selected ? _buildExpandedContent(item) : _buildCollapsedHeader(item),
+            child: ClipRRect(
+              borderRadius: item.borderRadius ?? BorderRadius.circular(widget.cardBorderRadius),
+              child: Container(
+                decoration: bg,
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: () => _bringToFront(item),
+                    child: item == _selected ? _buildExpandedContent(item) : _buildCollapsedHeader(item),
+                  ),
                 ),
               ),
             ),
