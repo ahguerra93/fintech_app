@@ -52,31 +52,41 @@ class TransferSuccessSection extends StatelessWidget {
                   fontWeight: FontWeight.w300,
                 ),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                spacing: 16.0,
-                children: [
-                  CircleAvatar(
-                    radius: 28,
-                    backgroundColor: theme.colorScheme.secondary,
-                    child: Text(
-                      initials,
-                      style: theme.textTheme.titleLarge?.copyWith(color: theme.colorScheme.onPrimary),
+              const SizedBox(height: 8.0),
+              Container(
+                margin: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 32.0),
+                padding: const EdgeInsets.all(16.0),
+                decoration: BoxDecoration(
+                  // color: theme.colorScheme.secondary,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: theme.colorScheme.onPrimary, width: 2),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  spacing: 16.0,
+                  children: [
+                    CircleAvatar(
+                      radius: 28,
+                      backgroundColor: theme.colorScheme.secondary,
+                      child: Text(
+                        initials,
+                        style: theme.textTheme.titleLarge?.copyWith(color: theme.colorScheme.onPrimary),
+                      ),
                     ),
-                  ),
-                  Column(
-                    children: [
-                      Text(
-                        recipient?.name ?? '',
-                        style: theme.textTheme.headlineLarge?.copyWith(color: theme.colorScheme.onPrimary),
-                      ),
-                      Text(
-                        recipient?.cardNumber ?? '',
-                        style: theme.textTheme.titleMedium?.copyWith(color: theme.colorScheme.onPrimary),
-                      ),
-                    ],
-                  ),
-                ],
+                    Column(
+                      children: [
+                        Text(
+                          recipient?.name ?? '',
+                          style: theme.textTheme.headlineLarge?.copyWith(color: theme.colorScheme.onPrimary),
+                        ),
+                        Text(
+                          recipient?.cardNumber ?? '',
+                          style: theme.textTheme.titleMedium?.copyWith(color: theme.colorScheme.onPrimary),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ],
           ),

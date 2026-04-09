@@ -19,8 +19,25 @@ class CardBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final onSurface = foregroundColor ?? Theme.of(context).colorScheme.onPrimary;
-    return Stack(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      // mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Your Balance',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: onSurface.withValues(alpha: 0.7)),
+            ),
+            Text(
+              hidden ? '****' : AppFormatters.amount(balance),
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: onSurface, fontWeight: FontWeight.w700),
+            ),
+          ],
+        ),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
@@ -32,14 +49,6 @@ class CardBody extends StatelessWidget {
             Text(
               hidden ? '**** **** ****' : '**** **** **** ${cardNumber.substring(cardNumber.length - 4)}',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(color: onSurface, fontWeight: FontWeight.w700),
-            ),
-            Text(
-              'Your Balance',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: onSurface.withValues(alpha: 0.7)),
-            ),
-            Text(
-              hidden ? '****' : AppFormatters.amount(balance),
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: onSurface, fontWeight: FontWeight.w700),
             ),
           ],
         ),

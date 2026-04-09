@@ -14,13 +14,20 @@ class TransferPage extends StatelessWidget {
       create: (_) => TransferBloc(),
       child: BlocBuilder<TransferBloc, TransferState>(
         builder: (context, state) {
-          return switch (state) {
-            TransferDataEntry() => const TransferFormSection(),
-            TransferConfirmation() => const TransferConfirmationSection(),
-            TransferLoading() => _LoadingSection(),
-            TransferSuccess(:final data) => TransferSuccessSection(data: data),
-            TransferFailure() => const TransferFormSection(),
-          };
+          return Container(
+            color: Theme.of(context).primaryColor,
+            height: double.infinity,
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 300),
+              child: switch (state) {
+                TransferDataEntry() => const TransferFormSection(),
+                TransferConfirmation() => const TransferConfirmationSection(),
+                TransferLoading() => _LoadingSection(),
+                TransferSuccess(:final data) => TransferSuccessSection(data: data),
+                TransferFailure() => const TransferFormSection(),
+              },
+            ),
+          );
         },
       ),
     );

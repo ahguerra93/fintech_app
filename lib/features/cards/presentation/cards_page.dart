@@ -93,7 +93,7 @@ class _CardsPageBodyState extends State<_CardsPageBody> {
     final themeExt = Theme.of(context).extension<AppColorTheme>()!;
 
     final TextStyle style = theme.textTheme.titleLarge!.copyWith(fontWeight: FontWeight.bold);
-    final cardSectionHeight = size.height / 3;
+    final cardSectionHeight = size.height / 3.5;
     const overlap = AppDimens.spacingXl + AppDimens.spacingSm;
 
     return Scaffold(

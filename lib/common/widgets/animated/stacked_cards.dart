@@ -1,3 +1,4 @@
+import 'package:fintech_app/common/widgets/clickable_wrapper.dart';
 import 'package:flutter/material.dart';
 
 class CardItem {
@@ -101,12 +102,12 @@ class _StackedCardsState extends State<StackedCards> {
               borderRadius: item.borderRadius ?? BorderRadius.circular(widget.cardBorderRadius),
               child: Container(
                 decoration: bg,
-                child: Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    onTap: () => _bringToFront(item),
-                    child: item == _selected ? _buildExpandedContent(item) : _buildCollapsedHeader(item),
-                  ),
+                // height: cardH,
+                child: ClickableWrapper(
+                  borderRadius: item.borderRadius ?? BorderRadius.circular(widget.cardBorderRadius),
+                  padding: EdgeInsets.zero,
+                  onTap: () => _bringToFront(item),
+                  child: item == _selected ? _buildExpandedContent(item) : _buildCollapsedHeader(item),
                 ),
               ),
             ),
@@ -127,23 +128,50 @@ class _StackedCardsState extends State<StackedCards> {
     ),
   );
 
-  Widget _buildExpandedContent(CardItem item) => Stack(
+  Widget _buildExpandedContent(CardItem item) => Padding(
+    padding: const EdgeInsets.all(18),
+    child: Column(
+      // mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        DefaultTextStyle.merge(
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black87),
+          child: item.title,
+        ),
+        const SizedBox(height: 12),
+        Expanded(
+          child: DefaultTextStyle.merge(
+            style: const TextStyle(fontSize: 16, color: Colors.black54),
+            child: item.body,
+          ),
+        ),
+        // const SizedBox(height: 60),
+      ],
+    ),
+  );
+  Widget _buildExpandedContent2(CardItem item) => Stack(
     children: [
-      Positioned.fill(
-        child: ListView(
+      Positioned(
+        child: Padding(
           padding: const EdgeInsets.all(18),
-          children: [
-            DefaultTextStyle.merge(
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black87),
-              child: item.title,
-            ),
-            const SizedBox(height: 12),
-            DefaultTextStyle.merge(
-              style: const TextStyle(fontSize: 16, color: Colors.black54),
-              child: item.body,
-            ),
-            const SizedBox(height: 60),
-          ],
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              DefaultTextStyle.merge(
+                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black87),
+                child: item.title,
+              ),
+              const SizedBox(height: 12),
+              Expanded(
+                child: DefaultTextStyle.merge(
+                  style: const TextStyle(fontSize: 16, color: Colors.black54),
+                  child: Container(color: Colors.blue, child: item.body),
+                ),
+              ),
+              const SizedBox(height: 60),
+            ],
+          ),
         ),
       ),
       if (item.isButton == true)

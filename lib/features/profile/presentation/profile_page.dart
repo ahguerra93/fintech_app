@@ -226,17 +226,15 @@ class _ProfileNavTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(AppDimens.radiusMd),
-        child: ListTile(
-          contentPadding: EdgeInsets.zero,
-          leading: Icon(icon, color: theme.colorScheme.primary, size: AppDimens.iconLg),
-          title: Text(label, style: theme.textTheme.bodyLarge),
-          trailing: const Icon(Icons.chevron_right),
-        ),
+    return ClickableWrapper(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(AppDimens.radiusMd),
+      padding: EdgeInsets.zero,
+      child: ListTile(
+        contentPadding: EdgeInsets.zero,
+        leading: Icon(icon, color: theme.colorScheme.primary, size: AppDimens.iconLg),
+        title: Text(label, style: theme.textTheme.bodyLarge),
+        trailing: const Icon(Icons.chevron_right),
       ),
     );
   }

@@ -1,6 +1,7 @@
 import 'package:fintech_app/app_colors.dart';
 import 'package:fintech_app/common/app_dimens.dart';
 import 'package:fintech_app/common/app_formatters.dart';
+import 'package:fintech_app/common/widgets/clickable_wrapper.dart';
 import 'package:fintech_app/common/widgets/error_screen.dart';
 import 'package:fintech_app/common/widgets/section_title.dart';
 import 'package:fintech_app/common/widgets/transaction_tile.dart';
@@ -338,28 +339,23 @@ class _InfoItemCard extends StatelessWidget {
     final themeExt = Theme.of(context).extension<AppColorTheme>()!;
     return Container(
       decoration: BoxDecoration(color: themeExt.primary, borderRadius: BorderRadius.circular(AppDimens.radiusMd)),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(AppDimens.radiusMd),
-          onTap: () {},
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: AppDimens.spacingMd, horizontal: AppDimens.spacingLg),
-            child: Row(
-              spacing: AppDimens.spacingMd,
-              children: [
-                Icon(item.icon, color: themeExt.background, size: 28),
-                Flexible(
-                  child: Text(
-                    item.text,
-                    style: Theme.of(
-                      context,
-                    ).textTheme.titleMedium!.copyWith(color: themeExt.background, fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ],
+      child: ClickableWrapper(
+        borderRadius: BorderRadius.circular(AppDimens.radiusMd),
+        padding: const EdgeInsets.symmetric(vertical: AppDimens.spacingMd, horizontal: AppDimens.spacingLg),
+        onTap: () {},
+        child: Row(
+          spacing: AppDimens.spacingMd,
+          children: [
+            Icon(item.icon, color: themeExt.background, size: 28),
+            Flexible(
+              child: Text(
+                item.text,
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium!.copyWith(color: themeExt.background, fontWeight: FontWeight.bold),
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );

@@ -1,3 +1,5 @@
+import 'package:fintech_app/common/app_dimens.dart';
+import 'package:fintech_app/common/widgets/clickable_wrapper.dart';
 import 'package:flutter/material.dart';
 
 typedef KeyboardTapCallback = void Function(int digit);
@@ -65,15 +67,18 @@ class _NumericKeyboardState extends State<NumericKeyboard> {
             mainAxisAlignment: widget.mainAxisAlignment,
             children: <Widget>[
               InkWell(
-                borderRadius: BorderRadius.circular(45),
+                borderRadius: BorderRadius.circular(AppDimens.radiusMd),
                 onTap: widget.leftButtonFn,
-                child: Container(alignment: Alignment.center, width: 50, height: 50, child: widget.leftIcon),
+                child: Container(alignment: Alignment.center, width: 80, height: 50, child: widget.leftIcon),
               ),
               _calcButton('0'),
-              InkWell(
-                borderRadius: BorderRadius.circular(45),
-                onTap: widget.rightButtonFn,
-                child: Container(alignment: Alignment.center, width: 50, height: 50, child: widget.rightIcon),
+              Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(AppDimens.radiusMd),
+                  onTap: widget.rightButtonFn,
+                  child: Container(width: 80, height: 50, alignment: Alignment.center, child: widget.rightIcon),
+                ),
               ),
             ],
           ),
@@ -83,22 +88,25 @@ class _NumericKeyboardState extends State<NumericKeyboard> {
   }
 
   Widget _calcButton(String value) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(10),
+    return Container(
+      // padding: const EdgeInsets.all(10),
+      alignment: Alignment.center,
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: Colors.grey[200]),
+      width: 80,
+      height: 50,
+      child: ClickableWrapper(
         onTap: () {
           widget.onKeyboardTap(int.parse(value));
         },
-        child: Container(
-          margin: const EdgeInsets.all(10),
-          alignment: Alignment.center,
-          decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: Colors.grey[200]),
+        child: SizedBox(
           width: 80,
           height: 50,
-          child: Text(
-            value,
-            style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: widget.textColor),
+
+          child: Center(
+            child: Text(
+              value,
+              style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: widget.textColor),
+            ),
           ),
         ),
       ),

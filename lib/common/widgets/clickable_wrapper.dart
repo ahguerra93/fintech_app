@@ -15,7 +15,7 @@ class ClickableWrapper extends StatelessWidget {
       child: InkWell(
         borderRadius: borderRadius ?? BorderRadius.circular(AppDimens.radiusXl),
         onTap: onTap,
-        child: Padding(padding: padding ?? EdgeInsets.all(AppDimens.spacingMd), child: child),
+        child: Padding(padding: padding ?? EdgeInsets.zero, child: child),
       ),
     );
   }

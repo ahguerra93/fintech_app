@@ -29,6 +29,11 @@ class TransferConfirmationSection extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  Text(
+                    'Confirm Transfer',
+                    style: theme.textTheme.headlineMedium?.copyWith(color: theme.colorScheme.onPrimary),
+                  ),
+                  const SizedBox(height: 32.0),
                   Text('Send:', style: theme.textTheme.titleLarge?.copyWith(color: theme.colorScheme.onPrimary)),
                   Text(
                     '\$${AppFormatters.amount(data.amount)}',
@@ -39,31 +44,40 @@ class TransferConfirmationSection extends StatelessWidget {
                   ),
                   const SizedBox(height: 32.0),
                   Text('To:', style: theme.textTheme.titleLarge?.copyWith(color: theme.colorScheme.onPrimary)),
-                  Row(
-                    spacing: 16.0,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      CircleAvatar(
-                        radius: 38,
-                        backgroundColor: theme.colorScheme.secondary,
-                        child: Text(
-                          recipient?.initials ?? '',
-                          style: theme.textTheme.headlineMedium?.copyWith(color: theme.colorScheme.onPrimary),
+                  Container(
+                    margin: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 32.0),
+                    padding: const EdgeInsets.all(16.0),
+                    decoration: BoxDecoration(
+                      // color: theme.colorScheme.secondary,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: theme.colorScheme.onPrimary, width: 2),
+                    ),
+                    child: Row(
+                      spacing: 16.0,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CircleAvatar(
+                          radius: 38,
+                          backgroundColor: theme.colorScheme.secondary,
+                          child: Text(
+                            recipient?.initials ?? '',
+                            style: theme.textTheme.headlineMedium?.copyWith(color: theme.colorScheme.onPrimary),
+                          ),
                         ),
-                      ),
-                      Column(
-                        children: [
-                          Text(
-                            recipient?.name ?? '',
-                            style: theme.textTheme.headlineLarge?.copyWith(color: theme.colorScheme.onPrimary),
-                          ),
-                          Text(
-                            recipient?.cardNumber ?? '',
-                            style: theme.textTheme.titleMedium?.copyWith(color: theme.colorScheme.onPrimary),
-                          ),
-                        ],
-                      ),
-                    ],
+                        Column(
+                          children: [
+                            Text(
+                              recipient?.name ?? '',
+                              style: theme.textTheme.headlineLarge?.copyWith(color: theme.colorScheme.onPrimary),
+                            ),
+                            Text(
+                              recipient?.cardNumber ?? '',
+                              style: theme.textTheme.titleMedium?.copyWith(color: theme.colorScheme.onPrimary),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),

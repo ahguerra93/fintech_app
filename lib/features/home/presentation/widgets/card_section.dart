@@ -2,6 +2,7 @@ import 'package:fintech_app/app_colors.dart';
 import 'package:fintech_app/common/app_assets.dart';
 import 'package:fintech_app/common/app_dimens.dart';
 import 'package:fintech_app/common/widgets/cards/card_widget.dart';
+import 'package:fintech_app/common/widgets/clickable_wrapper.dart';
 import 'package:fintech_app/common/widgets/section_title.dart';
 import 'package:fintech_app/common/widgets/empty_state.dart';
 import 'package:fintech_app/features/home/presentation/bloc/home_bloc.dart';
@@ -106,33 +107,27 @@ class CardWidget extends StatelessWidget {
             borderRadius: BorderRadius.circular(AppDimens.radiusXl),
             color: debit ? themeExt.softAccent : themeExt.primary,
           ),
-          child: Material(
-            color: Colors.transparent,
-
-            child: InkWell(
-              onTap: () {},
-              borderRadius: BorderRadius.circular(AppDimens.radiusXl),
-              child: Padding(
-                padding: const EdgeInsets.all(AppDimens.spacingMd),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      debit ? 'Debit Card' : 'Credit Card',
-                      style: Theme.of(
-                        context,
-                      ).textTheme.titleLarge?.copyWith(color: debit ? null : onSurface, fontWeight: FontWeight.bold),
-                    ),
-                    CardBody(
-                      balance: balance,
-                      cardNumber: cardNumber,
-                      foregroundColor: debit ? themeExt.textPrimary : onSurface,
-                      hidden: hidden,
-                    ),
-                  ],
+          child: ClickableWrapper(
+            borderRadius: BorderRadius.circular(AppDimens.radiusXl),
+            padding: const EdgeInsets.all(AppDimens.spacingMd),
+            onTap: () {},
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  debit ? 'Debit Card' : 'Credit Card',
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge?.copyWith(color: debit ? null : onSurface, fontWeight: FontWeight.bold),
                 ),
-              ),
+                CardBody(
+                  balance: balance,
+                  cardNumber: cardNumber,
+                  foregroundColor: debit ? themeExt.textPrimary : onSurface,
+                  hidden: hidden,
+                ),
+              ],
             ),
           ),
         ),
