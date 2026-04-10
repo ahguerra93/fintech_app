@@ -34,6 +34,6 @@ class HomeDataSourceImpl implements HomeDataSource {
       ),
     ];
 
-    return HomeData(balance: 25000.00, cards: dummyCards, recentTransactions: dummyTransactions);
+    return HomeData(firstName: 'Andres', balance: 25000.00, cards: dummyCards, recentTransactions: dummyTransactions);
   }
 }

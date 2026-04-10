@@ -207,7 +207,9 @@ class _ProfilePageWidgetState extends State<ProfilePageWidget> {
           ),
           const SizedBox(height: AppDimens.spacingSm),
           OutlinedButton(
-            onPressed: () {},
+            onPressed: () {
+              context.go(AppRoutes.login);
+            },
             style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(48)),
             child: const Text('Log Out'),
           ),

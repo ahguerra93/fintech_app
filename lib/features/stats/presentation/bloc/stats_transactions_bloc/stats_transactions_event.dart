@@ -6,5 +6,6 @@ sealed class StatsTransactionsEvent {
 }
 
 final class FetchStatsTransactions extends StatsTransactionsEvent {
-  const FetchStatsTransactions();
+  final TimeRange timeRange;
+  const FetchStatsTransactions({this.timeRange = TimeRange.week});
 }

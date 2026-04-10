@@ -1,5 +1,6 @@
 import 'package:fintech_app/di/di.dart';
 import 'package:fintech_app/features/stats/domain/models/stats_transaction_model.dart';
+import 'package:fintech_app/features/stats/domain/models/time_range.dart';
 import 'package:fintech_app/features/stats/domain/usecases/fetch_stats_transactions.dart';
 import 'package:fintech_app/features/dev_tools/presentation/cubit/devtools_cubit.dart';
 import 'package:fintech_app/features/dev_tools/presentation/cubit/devtools_state.dart';
@@ -30,7 +31,7 @@ class StatsTransactionsBloc extends Bloc<StatsTransactionsEvent, StatsTransactio
       if (responseType == ResponseType.empty) {
         return emit(const StatsTransactionsEmpty());
       }
-      final transactions = await _fetchStatsTransactionsUseCase();
+      final transactions = await _fetchStatsTransactionsUseCase(event.timeRange);
       emit(StatsTransactionsSuccess(transactions));
     } catch (e) {
       emit(StatsTransactionsError(e.toString()));

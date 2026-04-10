@@ -26,7 +26,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         throw Exception('Simulated error');
       }
       if (responseType == ResponseType.empty) {
-        return emit(HomeSuccess(HomeData(balance: 0, cards: [], recentTransactions: [])));
+        return emit(HomeSuccess(HomeData(firstName: '', balance: 0, cards: [], recentTransactions: [])));
       }
       final homeData = await _fetchHomeDataUseCase();
       emit(HomeSuccess(homeData));

@@ -1,6 +1,7 @@
 import 'package:fintech_app/features/stats/data/datasources/stats_datasource.dart';
 import 'package:fintech_app/features/stats/domain/models/graph_data_model.dart';
 import 'package:fintech_app/features/stats/domain/models/stats_transaction_model.dart';
+import 'package:fintech_app/features/stats/domain/models/time_range.dart';
 import 'package:fintech_app/features/stats/domain/repositories/stats_repository.dart';
 
 class StatsRepositoryImpl implements StatsRepository {
@@ -9,12 +10,12 @@ class StatsRepositoryImpl implements StatsRepository {
   StatsRepositoryImpl({required this.dataSource});
 
   @override
-  Future<GraphDataModel> fetchGraphData() async {
-    return await dataSource.fetchGraphData();
+  Future<GraphDataModel> fetchGraphData(TimeRange timeRange) async {
+    return await dataSource.fetchGraphData(timeRange);
   }
 
   @override
-  Future<List<StatsTransactionModel>> fetchStatsTransactions() async {
-    return await dataSource.fetchStatsTransactions();
+  Future<List<StatsTransactionModel>> fetchStatsTransactions(TimeRange timeRange) async {
+    return await dataSource.fetchStatsTransactions(timeRange);
   }
 }
