@@ -1,3 +1,5 @@
+import 'package:fintech_app/common/app_assets.dart';
+import 'package:fintech_app/common/app_dimens.dart';
 import 'package:fintech_app/common/app_formatters.dart';
 import 'package:fintech_app/features/transfers/presentation/bloc/transfer_bloc.dart';
 import 'package:flutter/material.dart';
@@ -29,6 +31,25 @@ class TransferConfirmationSection extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    spacing: AppDimens.spacingMd,
+                    children: [
+                      Text(
+                        'Confirm Transfer',
+                        style: theme.textTheme.headlineMedium?.copyWith(color: theme.colorScheme.onPrimary),
+                      ),
+                      Container(
+                        padding: EdgeInsets.all(AppDimens.spacingSm),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: theme.colorScheme.onPrimary, width: 2),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Image.asset(AppAssets.logoOutlined, height: AppDimens.iconXl),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: AppDimens.spacingXl),
                   Text('Send:', style: theme.textTheme.titleLarge?.copyWith(color: theme.colorScheme.onPrimary)),
                   Text(
                     '\$${AppFormatters.amount(data.amount)}',
@@ -37,39 +58,52 @@ class TransferConfirmationSection extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 32.0),
+                  const SizedBox(height: AppDimens.spacingXl),
                   Text('To:', style: theme.textTheme.titleLarge?.copyWith(color: theme.colorScheme.onPrimary)),
-                  Row(
-                    spacing: 16.0,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      CircleAvatar(
-                        radius: 38,
-                        backgroundColor: theme.colorScheme.secondary,
-                        child: Text(
-                          recipient?.initials ?? '',
-                          style: theme.textTheme.headlineMedium?.copyWith(color: theme.colorScheme.onPrimary),
+                  Container(
+                    margin: const EdgeInsets.symmetric(vertical: AppDimens.spacingMd, horizontal: AppDimens.spacingXl),
+                    padding: const EdgeInsets.all(AppDimens.spacingMd),
+                    decoration: BoxDecoration(
+                      // color: theme.colorScheme.secondary,
+                      borderRadius: BorderRadius.circular(AppDimens.radiusLg),
+                      border: Border.all(color: theme.colorScheme.onPrimary, width: 2),
+                    ),
+                    child: Row(
+                      spacing: 16.0,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CircleAvatar(
+                          radius: 38,
+                          backgroundColor: theme.colorScheme.secondary,
+                          child: Text(
+                            recipient?.initials ?? '',
+                            style: theme.textTheme.headlineMedium?.copyWith(color: theme.colorScheme.onPrimary),
+                          ),
                         ),
-                      ),
-                      Column(
-                        children: [
-                          Text(
-                            recipient?.name ?? '',
-                            style: theme.textTheme.headlineLarge?.copyWith(color: theme.colorScheme.onPrimary),
-                          ),
-                          Text(
-                            recipient?.cardNumber ?? '',
-                            style: theme.textTheme.titleMedium?.copyWith(color: theme.colorScheme.onPrimary),
-                          ),
-                        ],
-                      ),
-                    ],
+                        Column(
+                          children: [
+                            Text(
+                              recipient?.name ?? '',
+                              style: theme.textTheme.headlineLarge?.copyWith(color: theme.colorScheme.onPrimary),
+                            ),
+                            Text(
+                              recipient?.cardNumber ?? '',
+                              style: theme.textTheme.titleMedium?.copyWith(color: theme.colorScheme.onPrimary),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
             ),
             Container(
-              padding: const EdgeInsets.only(top: 16.0, right: 16.0, left: 16.0),
+              padding: const EdgeInsets.only(
+                top: AppDimens.spacingMd,
+                right: AppDimens.spacingMd,
+                left: AppDimens.spacingMd,
+              ),
               decoration: BoxDecoration(
                 color: theme.colorScheme.onPrimary,
                 borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),

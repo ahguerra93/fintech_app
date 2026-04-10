@@ -93,7 +93,7 @@ class _CardsPageBodyState extends State<_CardsPageBody> {
     final themeExt = Theme.of(context).extension<AppColorTheme>()!;
 
     final TextStyle style = theme.textTheme.titleLarge!.copyWith(fontWeight: FontWeight.bold);
-    final cardSectionHeight = size.height / 3;
+    final cardSectionHeight = size.height / 3.5;
     const overlap = AppDimens.spacingXl + AppDimens.spacingSm;
 
     return Scaffold(
@@ -170,10 +170,14 @@ class _CardAction extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        CircleAvatar(
-          radius: AppDimens.iconLg,
-          backgroundColor: color.withValues(alpha: 0.1),
-          child: Icon(icon, color: color, size: AppDimens.iconLg),
+        InkWell(
+          onTap: () {},
+          borderRadius: BorderRadius.circular(AppDimens.radiusFull),
+          child: CircleAvatar(
+            radius: AppDimens.iconLg,
+            backgroundColor: color.withValues(alpha: 0.1),
+            child: Icon(icon, color: color, size: AppDimens.iconLg),
+          ),
         ),
         const SizedBox(height: AppDimens.spacingSm),
         Text(label, style: theme.textTheme.bodyMedium?.copyWith(color: color)),
@@ -196,7 +200,7 @@ class _CardsSection extends StatelessWidget {
   final AppColorTheme themeExt;
 
   static final List<CardModel> _dummyCards = List.filled(
-    3,
+    1,
     CardModel(cardNumber: '**** **** **** 1234', balance: 5230.75, type: CardType.debit),
   );
 
@@ -221,6 +225,11 @@ class _CardsSection extends StatelessWidget {
             key: Key('cards_section'),
             enabled: loading,
             enableSwitchAnimation: true,
+            // ignoreContainers: true,
+            ignorePointers: true,
+            justifyMultiLineText: true,
+            containersColor: theme.colorScheme.secondary,
+
             child: RepaintBoundary(
               child: cards.isEmpty
                   ? EmptyStateWidget(

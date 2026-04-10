@@ -1,3 +1,4 @@
+import 'package:fintech_app/common/app_dimens.dart';
 import 'package:flutter/material.dart';
 
 class EmptyStateWidget extends StatelessWidget {
@@ -13,7 +14,7 @@ class EmptyStateWidget extends StatelessWidget {
     final theme = Theme.of(context);
     return Center(
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 24.0),
+        padding: const EdgeInsets.symmetric(vertical: AppDimens.spacingLg),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           spacing: 16.0,

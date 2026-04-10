@@ -2,6 +2,7 @@ import 'package:fintech_app/app_colors.dart';
 import 'package:fintech_app/common/app_assets.dart';
 import 'package:fintech_app/common/app_dimens.dart';
 import 'package:fintech_app/common/widgets/cards/card_widget.dart';
+import 'package:fintech_app/common/widgets/clickable_wrapper.dart';
 import 'package:fintech_app/common/widgets/section_title.dart';
 import 'package:fintech_app/common/widgets/empty_state.dart';
 import 'package:fintech_app/features/home/presentation/bloc/home_bloc.dart';
@@ -106,8 +107,10 @@ class CardWidget extends StatelessWidget {
             borderRadius: BorderRadius.circular(AppDimens.radiusXl),
             color: debit ? themeExt.softAccent : themeExt.primary,
           ),
-          child: Padding(
+          child: ClickableWrapper(
+            borderRadius: BorderRadius.circular(AppDimens.radiusXl),
             padding: const EdgeInsets.all(AppDimens.spacingMd),
+            onTap: () {},
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

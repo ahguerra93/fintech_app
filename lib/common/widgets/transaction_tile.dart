@@ -19,6 +19,7 @@ class TransactionTile extends StatelessWidget {
     return ListTile(
       leading: CircleAvatar(child: Icon(Icons.attach_money)),
       title: Text(title, style: theme.textTheme.bodyLarge),
+      onTap: () {},
       subtitle: Text('$category • ${_formatDate(date)}'),
       trailing: Text(
         '\$${amount.toStringAsFixed(2)}',

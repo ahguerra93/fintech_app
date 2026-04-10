@@ -1,3 +1,4 @@
+import 'package:fintech_app/common/app_dimens.dart';
 import 'package:flutter/material.dart';
 import 'package:fintech_app/app_colors.dart';
 import 'package:fintech_app/app_text_styles.dart';
@@ -70,7 +71,7 @@ abstract final class AppTheme {
         color: cardColor,
         surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppDimens.radiusLg),
           side: BorderSide(color: dividerColor),
         ),
       ),
@@ -80,15 +81,15 @@ abstract final class AppTheme {
         fillColor: colorExtension.surfaceSoft,
         hintStyle: textTheme.bodyLarge?.copyWith(color: colorExtension.primaryDark.withValues(alpha: 0.4)),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(AppDimens.radiusMd),
           borderSide: BorderSide(color: dividerColor),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(AppDimens.radiusMd),
           borderSide: BorderSide(color: dividerColor),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(AppDimens.radiusMd),
           borderSide: BorderSide(color: colorExtension.primary, width: 2),
         ),
       ),
@@ -97,7 +98,7 @@ abstract final class AppTheme {
           backgroundColor: colorExtension.primary,
           foregroundColor: Colors.white,
           textStyle: AppTextStyles.labelLargeOnPrimary,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppDimens.radiusMd)),
         ),
       ),
       textButtonTheme: TextButtonThemeData(

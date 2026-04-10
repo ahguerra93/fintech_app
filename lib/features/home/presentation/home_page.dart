@@ -1,3 +1,4 @@
+import 'package:fintech_app/common/app_dimens.dart';
 import 'package:fintech_app/common/widgets/error_screen.dart';
 import 'package:fintech_app/config/routing/router.dart';
 import 'package:fintech_app/features/dev_tools/presentation/cubit/devtools_cubit.dart';
@@ -91,7 +92,7 @@ class _HomePageWidgetState extends State<HomePageWidget> {
               _ => SingleChildScrollView(
                 key: const ValueKey('home_content'),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 32.0),
+                  padding: const EdgeInsets.symmetric(vertical: AppDimens.spacingXl),
                   child: Column(
                     spacing: 16.0,
                     children: [

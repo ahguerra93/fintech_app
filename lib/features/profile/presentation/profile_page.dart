@@ -1,5 +1,6 @@
 import 'package:fintech_app/app_colors.dart';
 import 'package:fintech_app/common/app_dimens.dart';
+import 'package:fintech_app/common/widgets/clickable_wrapper.dart';
 import 'package:fintech_app/common/widgets/error_screen.dart';
 import 'package:fintech_app/config/routing/router.dart';
 import 'package:fintech_app/features/dev_tools/presentation/cubit/devtools_cubit.dart';
@@ -225,12 +226,16 @@ class _ProfileNavTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return ListTile(
-      contentPadding: EdgeInsets.zero,
-      leading: Icon(icon, color: theme.colorScheme.primary, size: AppDimens.iconLg),
-      title: Text(label, style: theme.textTheme.bodyLarge),
-      trailing: const Icon(Icons.chevron_right),
+    return ClickableWrapper(
       onTap: onTap,
+      borderRadius: BorderRadius.circular(AppDimens.radiusMd),
+      padding: EdgeInsets.zero,
+      child: ListTile(
+        contentPadding: EdgeInsets.zero,
+        leading: Icon(icon, color: theme.colorScheme.primary, size: AppDimens.iconLg),
+        title: Text(label, style: theme.textTheme.bodyLarge),
+        trailing: const Icon(Icons.chevron_right),
+      ),
     );
   }
 }
@@ -291,39 +296,43 @@ class _UserInfoContent extends StatelessWidget {
       enableSwitchAnimation: true,
       child: RepaintBoundary(
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: AppDimens.spacingMd, horizontal: AppDimens.spacingLg),
           decoration: BoxDecoration(
             color: theme.colorScheme.surface,
             borderRadius: BorderRadius.circular(AppDimens.radiusXl),
           ),
-          child: Row(
-            spacing: 16.0,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CircleAvatar(
-                radius: AppDimens.iconLg,
-                backgroundColor: themeExt.primary,
-                child: Text(
-                  userName.isNotEmpty ? userName.split(' ').map((e) => e[0]).take(2).join() : '?',
-                  style: theme.textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: theme.colorScheme.onPrimary,
+          child: ClickableWrapper(
+            onTap: () {},
+            padding: const EdgeInsets.symmetric(vertical: AppDimens.spacingMd, horizontal: AppDimens.spacingLg),
+            borderRadius: BorderRadius.circular(AppDimens.radiusXl),
+            child: Row(
+              spacing: 16.0,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CircleAvatar(
+                  radius: AppDimens.iconLg,
+                  backgroundColor: themeExt.primary,
+                  child: Text(
+                    userName.isNotEmpty ? userName.split(' ').map((e) => e[0]).take(2).join() : '?',
+                    style: theme.textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: theme.colorScheme.onPrimary,
+                    ),
                   ),
                 ),
-              ),
-              Flexible(
-                child: Column(
-                  children: [
-                    const SizedBox(height: AppDimens.spacingLg),
-                    Text(userName, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
-                    const SizedBox(height: AppDimens.spacingSm),
-                    Text(userEmail, style: theme.textTheme.bodyMedium?.copyWith(color: theme.hintColor)),
-                    const SizedBox(height: AppDimens.spacingSm),
-                    Text(accountId, style: theme.textTheme.bodySmall?.copyWith(letterSpacing: 2)),
-                  ],
+                Flexible(
+                  child: Column(
+                    children: [
+                      const SizedBox(height: AppDimens.spacingLg),
+                      Text(userName, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+                      const SizedBox(height: AppDimens.spacingSm),
+                      Text(userEmail, style: theme.textTheme.bodyMedium?.copyWith(color: theme.hintColor)),
+                      const SizedBox(height: AppDimens.spacingSm),
+                      Text(accountId, style: theme.textTheme.bodySmall?.copyWith(letterSpacing: 2)),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

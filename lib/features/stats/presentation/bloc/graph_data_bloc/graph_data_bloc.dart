@@ -28,7 +28,7 @@ class GraphDataBloc extends Bloc<GraphDataEvent, GraphDataState> {
         throw Exception('Simulated error');
       }
       if (responseType == ResponseType.empty) {
-        return emit(GraphDataSuccess(GraphDataModel(labels: [], values: [])));
+        return emit(GraphDataSuccess(GraphDataModel(items: [])));
       }
       final graphData = await _fetchGraphDataUseCase();
       emit(GraphDataSuccess(graphData));
