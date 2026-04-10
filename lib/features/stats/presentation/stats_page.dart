@@ -8,6 +8,8 @@ import 'package:fintech_app/common/widgets/transaction_tile.dart';
 import 'package:fintech_app/common/widgets/empty_state.dart';
 import 'package:fintech_app/config/routing/router.dart';
 import 'package:fintech_app/features/dev_tools/presentation/cubit/devtools_cubit.dart';
+import 'package:fintech_app/features/stats/domain/models/time_range.dart';
+import 'package:fintech_app/features/stats/presentation/bloc/time_range_cubit/time_range_cubit.dart';
 import 'package:fintech_app/features/stats/presentation/widgets/stats_bar_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -26,6 +28,7 @@ class StatsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
+        BlocProvider(create: (_) => TimeRangeCubit()),
         BlocProvider(create: (context) => GraphDataBloc(context.read<DevToolsCubit>())..add(const FetchGraphData())),
         BlocProvider(
           create: (context) =>
@@ -75,8 +78,9 @@ class _StatsPageWidgetState extends State<StatsPageWidget> {
     }
 
     if (newLocation == AppRoutes.stats) {
-      context.read<GraphDataBloc>().add(const FetchGraphData());
-      context.read<StatsTransactionsBloc>().add(const FetchStatsTransactions());
+      final timeRange = context.read<TimeRangeCubit>().state;
+      context.read<GraphDataBloc>().add(FetchGraphData(timeRange: timeRange));
+      context.read<StatsTransactionsBloc>().add(FetchStatsTransactions(timeRange: timeRange));
     }
 
     _currentLocation = newLocation;
@@ -90,36 +94,43 @@ class _StatsPageWidgetState extends State<StatsPageWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: DropdownTitle(), elevation: AppDimens.elevationNone),
-      body: BlocBuilder<GraphDataBloc, GraphDataState>(
-        buildWhen: (previous, current) => (previous is GraphDataError) != (current is GraphDataError),
-        builder: (context, state) {
-          return AnimatedSwitcher(
-            duration: const Duration(milliseconds: 350),
-            child: switch (state) {
-              GraphDataError(:final message) => ErrorScreen(
-                key: const ValueKey('stats_error'),
-                message: message,
-                onRetry: () {
-                  context.read<GraphDataBloc>().add(const FetchGraphData());
-                  context.read<StatsTransactionsBloc>().add(const FetchStatsTransactions());
-                },
-              ),
-              _ => Container(
-                key: const ValueKey('stats_content'),
-                height: double.infinity,
-                padding: const EdgeInsets.symmetric(horizontal: AppDimens.spacingMd),
-                child: SingleChildScrollView(
-                  child: Column(
-                    spacing: AppDimens.spacingMd,
-                    children: [const _GraphSection(), const AdditionalInfoBox(), const _TransactionsSection()],
+    return BlocListener<TimeRangeCubit, TimeRange>(
+      listener: (context, timeRange) {
+        context.read<GraphDataBloc>().add(FetchGraphData(timeRange: timeRange));
+        context.read<StatsTransactionsBloc>().add(FetchStatsTransactions(timeRange: timeRange));
+      },
+      child: Scaffold(
+        appBar: AppBar(title: const DropdownTitle(), elevation: AppDimens.elevationNone),
+        body: BlocBuilder<GraphDataBloc, GraphDataState>(
+          buildWhen: (previous, current) => (previous is GraphDataError) != (current is GraphDataError),
+          builder: (context, state) {
+            return AnimatedSwitcher(
+              duration: const Duration(milliseconds: 350),
+              child: switch (state) {
+                GraphDataError(:final message) => ErrorScreen(
+                  key: const ValueKey('stats_error'),
+                  message: message,
+                  onRetry: () {
+                    final timeRange = context.read<TimeRangeCubit>().state;
+                    context.read<GraphDataBloc>().add(FetchGraphData(timeRange: timeRange));
+                    context.read<StatsTransactionsBloc>().add(FetchStatsTransactions(timeRange: timeRange));
+                  },
+                ),
+                _ => Container(
+                  key: const ValueKey('stats_content'),
+                  height: double.infinity,
+                  padding: const EdgeInsets.symmetric(horizontal: AppDimens.spacingMd),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      spacing: AppDimens.spacingMd,
+                      children: [const _GraphSection(), const AdditionalInfoBox(), const _TransactionsSection()],
+                    ),
                   ),
                 ),
-              ),
-            },
-          );
-        },
+              },
+            );
+          },
+        ),
       ),
     );
   }
@@ -132,24 +143,24 @@ class DropdownTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final TextStyle style = theme.textTheme.titleLarge!.copyWith(fontWeight: FontWeight.bold);
-    return DropdownButton(
-      underline: SizedBox.shrink(),
-      items: [
-        DropdownMenuItem(
-          value: 'week',
-          child: Text('This Week', style: style),
-        ),
-        DropdownMenuItem(
-          value: 'month',
-          child: Text('This Month', style: style),
-        ),
-        DropdownMenuItem(
-          value: 'year',
-          child: Text('This Year', style: style),
-        ),
-      ],
-      value: 'week',
-      onChanged: (value) {},
+    return BlocBuilder<TimeRangeCubit, TimeRange>(
+      builder: (context, selectedRange) {
+        return DropdownButton<TimeRange>(
+          underline: const SizedBox.shrink(),
+          value: selectedRange,
+          items: TimeRange.values
+              .map(
+                (range) => DropdownMenuItem(
+                  value: range,
+                  child: Text(range.displayName, style: style),
+                ),
+              )
+              .toList(),
+          onChanged: (value) {
+            if (value != null) context.read<TimeRangeCubit>().setTimeRange(value);
+          },
+        );
+      },
     );
   }
 }

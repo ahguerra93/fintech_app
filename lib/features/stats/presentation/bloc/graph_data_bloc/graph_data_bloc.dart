@@ -1,5 +1,6 @@
 import 'package:fintech_app/di/di.dart';
 import 'package:fintech_app/features/stats/domain/models/graph_data_model.dart';
+import 'package:fintech_app/features/stats/domain/models/time_range.dart';
 import 'package:fintech_app/features/stats/domain/usecases/fetch_graph_data.dart';
 import 'package:fintech_app/features/dev_tools/presentation/cubit/devtools_cubit.dart';
 import 'package:fintech_app/features/dev_tools/presentation/cubit/devtools_state.dart';
@@ -30,7 +31,7 @@ class GraphDataBloc extends Bloc<GraphDataEvent, GraphDataState> {
       if (responseType == ResponseType.empty) {
         return emit(GraphDataSuccess(GraphDataModel(items: [])));
       }
-      final graphData = await _fetchGraphDataUseCase();
+      final graphData = await _fetchGraphDataUseCase(event.timeRange);
       emit(GraphDataSuccess(graphData));
     } catch (e) {
       emit(GraphDataError(e.toString()));

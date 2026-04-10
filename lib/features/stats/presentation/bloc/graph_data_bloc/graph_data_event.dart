@@ -6,5 +6,6 @@ sealed class GraphDataEvent {
 }
 
 final class FetchGraphData extends GraphDataEvent {
-  const FetchGraphData();
+  final TimeRange timeRange;
+  const FetchGraphData({this.timeRange = TimeRange.week});
 }

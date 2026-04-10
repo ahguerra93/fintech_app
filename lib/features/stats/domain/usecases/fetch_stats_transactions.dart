@@ -1,4 +1,5 @@
 import 'package:fintech_app/features/stats/domain/models/stats_transaction_model.dart';
+import 'package:fintech_app/features/stats/domain/models/time_range.dart';
 import 'package:fintech_app/features/stats/domain/repositories/stats_repository.dart';
 
 class FetchStatsTransactionsUseCase {
@@ -6,7 +7,7 @@ class FetchStatsTransactionsUseCase {
 
   FetchStatsTransactionsUseCase({required this.repository});
 
-  Future<List<StatsTransactionModel>> call() async {
-    return await repository.fetchStatsTransactions();
+  Future<List<StatsTransactionModel>> call(TimeRange timeRange) async {
+    return await repository.fetchStatsTransactions(timeRange);
   }
 }

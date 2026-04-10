@@ -76,47 +76,55 @@ class _HomePageWidgetState extends State<HomePageWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: const HomeAppBar(userName: 'Kimberly'),
-      body: BlocBuilder<HomeBloc, HomeState>(
-        buildWhen: (previous, current) => (previous is HomeError) != (current is HomeError),
-        builder: (context, state) {
-          return AnimatedSwitcher(
-            duration: const Duration(milliseconds: 350),
-            child: switch (state) {
-              HomeError(:final message) => ErrorScreen(
-                key: const ValueKey('error_home_content'),
-                message: message,
-                onRetry: () => context.read<HomeBloc>().add(FetchHomeData()),
-              ),
-              _ => SingleChildScrollView(
-                key: const ValueKey('home_content'),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: AppDimens.spacingXl),
-                  child: Column(
-                    spacing: 16.0,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                        child: RepaintBoundary(child: BalanceWidget()),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                        child: RepaintBoundary(child: HomeActions()),
-                      ),
-                      RepaintBoundary(child: CardSection()),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                        child: RepaintBoundary(child: RecentPaymentsSection()),
-                      ),
-                    ],
+    return BlocBuilder<HomeBloc, HomeState>(
+      buildWhen: (previous, current) =>
+          (previous is HomeSuccess ? previous.data.firstName : null) !=
+          (current is HomeSuccess ? current.data.firstName : null),
+      builder: (context, state) {
+        final firstName = state is HomeSuccess ? state.data.firstName : '';
+        return Scaffold(
+          appBar: HomeAppBar(userName: firstName),
+          body: BlocBuilder<HomeBloc, HomeState>(
+            buildWhen: (previous, current) => (previous is HomeError) != (current is HomeError),
+            builder: (context, state) {
+              return AnimatedSwitcher(
+                duration: const Duration(milliseconds: 350),
+                child: switch (state) {
+                  HomeError(:final message) => ErrorScreen(
+                    key: const ValueKey('error_home_content'),
+                    message: message,
+                    onRetry: () => context.read<HomeBloc>().add(FetchHomeData()),
                   ),
-                ),
-              ),
+                  _ => SingleChildScrollView(
+                    key: const ValueKey('home_content'),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: AppDimens.spacingXl),
+                      child: Column(
+                        spacing: 16.0,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                            child: RepaintBoundary(child: BalanceWidget()),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                            child: RepaintBoundary(child: HomeActions()),
+                          ),
+                          RepaintBoundary(child: CardSection()),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                            child: RepaintBoundary(child: RecentPaymentsSection()),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                },
+              );
             },
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 }
