@@ -18,18 +18,18 @@ class TransferPage extends StatelessWidget {
           return AnnotatedRegion<SystemUiOverlayStyle>(
             value: SystemUiOverlayStyle.light,
             child: Container(
-            color: Theme.of(context).primaryColor,
-            height: double.infinity,
-            child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 300),
-              child: switch (state) {
-                TransferDataEntry() => const TransferFormSection(),
-                TransferConfirmation() => const TransferConfirmationSection(),
-                TransferLoading() => _LoadingSection(),
-                TransferSuccess(:final data) => TransferSuccessSection(data: data),
-                TransferFailure() => const TransferFormSection(),
-              },
-            ),
+              color: Theme.of(context).primaryColor,
+              height: double.infinity,
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 300),
+                child: switch (state) {
+                  TransferDataEntry() => const TransferFormSection(),
+                  TransferConfirmation() => const TransferConfirmationSection(),
+                  TransferLoading() => _LoadingSection(),
+                  TransferSuccess(:final data) => TransferSuccessSection(data: data),
+                  TransferFailure() => const TransferFormSection(),
+                },
+              ),
             ),
           );
         },

@@ -187,7 +187,10 @@ class ChartContainer extends StatelessWidget {
               MoneyLabel(label: 'Net', value: netAmount),
             ],
           ),
-          SizedBox(height: size.height * 0.20, child: StatsBarChart(graphData: graphData)),
+          SizedBox(
+            height: size.height * 0.20,
+            child: StatsBarChart(graphData: graphData),
+          ),
         ],
       ),
     );
@@ -387,10 +390,7 @@ class _GraphSection extends StatelessWidget {
   const _GraphSection();
 
   static final GraphDataModel _dummyGraphData = GraphDataModel(
-    items: List.filled(
-      7,
-      const GraphDataItem(label: 'Loading', expense: 500.0, income: 500.0),
-    ),
+    items: List.filled(7, const GraphDataItem(label: 'Loading', expense: 500.0, income: 500.0)),
   );
 
   @override

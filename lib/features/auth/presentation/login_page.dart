@@ -24,99 +24,99 @@ class LoginPage extends StatelessWidget {
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.light,
       child: Scaffold(
-      backgroundColor: themeExt.primary,
-      body: SafeArea(
-        child: BlocConsumer<AuthBloc, AuthState>(
-          listener: (context, state) {
-            if (state is Authorized) {
-              context.go(AppRoutes.home);
-            }
-          },
-          builder: (context, state) {
-            final isLoading = state is AuthLoading;
-            final isError = state is AuthError;
+        backgroundColor: themeExt.primary,
+        body: SafeArea(
+          child: BlocConsumer<AuthBloc, AuthState>(
+            listener: (context, state) {
+              if (state is Authorized) {
+                context.go(AppRoutes.home);
+              }
+            },
+            builder: (context, state) {
+              final isLoading = state is AuthLoading;
+              final isError = state is AuthError;
 
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppDimens.spacingXl),
-              child: Column(
-                children: [
-                  Expanded(
-                    child: Center(
-                      child: SingleChildScrollView(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            CircleAvatar(
-                              radius: 56,
-                              backgroundColor: Colors.white,
-                              child: Padding(
-                                padding: const EdgeInsets.all(AppDimens.spacingMd),
-                                child: Image.asset(
-                                  AppAssets.logoOutlined,
-                                  color: themeExt.primary,
-                                  fit: BoxFit.contain,
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: AppDimens.spacingXl),
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: Center(
+                        child: SingleChildScrollView(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              CircleAvatar(
+                                radius: 56,
+                                backgroundColor: Colors.white,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(AppDimens.spacingMd),
+                                  child: Image.asset(
+                                    AppAssets.logoOutlined,
+                                    color: themeExt.primary,
+                                    fit: BoxFit.contain,
+                                  ),
                                 ),
                               ),
-                            ),
-                            const SizedBox(height: AppDimens.spacingLg),
-                            Text('Welcome Back', style: theme.textTheme.displayLarge?.copyWith(color: Colors.white)),
-                            const SizedBox(height: AppDimens.spacingSm),
-                            Text(
-                              'Sign in to continue managing your finances',
-                              style: theme.textTheme.bodyLarge?.copyWith(color: Colors.white.withValues(alpha: 0.85)),
-                              textAlign: TextAlign.center,
-                            ),
-                            const SizedBox(height: AppDimens.spacingXxl),
-                            AppLabeledField(
-                              label: 'Email',
-                              controller: emailController,
-                              keyboardType: TextInputType.emailAddress,
-                              style: TextStyle(color: themeExt.textPrimary),
-                              suffixIcon: Icon(Icons.info_outline, color: themeExt.textSecondary),
-                            ),
-                            const SizedBox(height: AppDimens.spacingMd),
-                            AppLabeledField(
-                              label: 'Password',
-                              controller: passwordController,
-                              obscureText: true,
-                              style: TextStyle(color: themeExt.textPrimary),
-                            ),
-                            if (isError) ...[
-                              const SizedBox(height: AppDimens.spacingMd),
+                              const SizedBox(height: AppDimens.spacingLg),
+                              Text('Welcome Back', style: theme.textTheme.displayLarge?.copyWith(color: Colors.white)),
+                              const SizedBox(height: AppDimens.spacingSm),
                               Text(
-                                (state).message,
-                                style: TextStyle(color: theme.colorScheme.error),
+                                'Sign in to continue managing your finances',
+                                style: theme.textTheme.bodyLarge?.copyWith(color: Colors.white.withValues(alpha: 0.85)),
                                 textAlign: TextAlign.center,
                               ),
+                              const SizedBox(height: AppDimens.spacingXxl),
+                              AppLabeledField(
+                                label: 'Email',
+                                controller: emailController,
+                                keyboardType: TextInputType.emailAddress,
+                                style: TextStyle(color: themeExt.textPrimary),
+                                suffixIcon: Icon(Icons.info_outline, color: themeExt.textSecondary),
+                              ),
+                              const SizedBox(height: AppDimens.spacingMd),
+                              AppLabeledField(
+                                label: 'Password',
+                                controller: passwordController,
+                                obscureText: true,
+                                style: TextStyle(color: themeExt.textPrimary),
+                              ),
+                              if (isError) ...[
+                                const SizedBox(height: AppDimens.spacingMd),
+                                Text(
+                                  (state).message,
+                                  style: TextStyle(color: theme.colorScheme.error),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
                             ],
-                          ],
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: AppDimens.spacingXl),
-                  AppPrimaryButton(
-                    label: 'Sign In',
-                    isLoading: isLoading,
-                    backgroundColor: themeExt.primaryDark,
-                    onPressed: () {
-                      context.read<AuthBloc>().add(LoginRequested(emailController.text, passwordController.text));
-                    },
-                  ),
-                  const SizedBox(height: AppDimens.spacingMd),
-                  AppOutlinedButton(
-                    label: 'Create Account',
-                    onPressed: () {},
-                    borderColor: Colors.white,
-                    textColor: Colors.white,
-                  ),
-                ],
-              ),
-            );
-          },
+                    const SizedBox(height: AppDimens.spacingXl),
+                    AppPrimaryButton(
+                      label: 'Sign In',
+                      isLoading: isLoading,
+                      backgroundColor: themeExt.primaryDark,
+                      onPressed: () {
+                        context.read<AuthBloc>().add(LoginRequested(emailController.text, passwordController.text));
+                      },
+                    ),
+                    const SizedBox(height: AppDimens.spacingMd),
+                    AppOutlinedButton(
+                      label: 'Create Account',
+                      onPressed: () {},
+                      borderColor: Colors.white,
+                      textColor: Colors.white,
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
         ),
-      ),
       ),
     );
   }

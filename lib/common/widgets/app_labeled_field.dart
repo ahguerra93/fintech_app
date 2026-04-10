@@ -33,11 +33,9 @@ class AppLabeledField extends StatelessWidget {
       children: [
         Text(
           label,
-          style: labelStyle ??
-              Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w500,
-                  ),
+          style:
+              labelStyle ??
+              Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.w500),
         ),
         const SizedBox(height: AppDimens.spacingXs),
         TextFormField(
@@ -45,10 +43,7 @@ class AppLabeledField extends StatelessWidget {
           keyboardType: keyboardType,
           obscureText: obscureText,
           style: style ?? TextStyle(color: themeExt?.textPrimary),
-          decoration: InputDecoration(
-            fillColor: fillColor ?? Colors.white,
-            suffixIcon: suffixIcon,
-          ),
+          decoration: InputDecoration(fillColor: fillColor ?? Colors.white, suffixIcon: suffixIcon),
         ),
       ],
     );
