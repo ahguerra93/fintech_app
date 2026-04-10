@@ -1,13 +1,17 @@
 import 'package:fintech_app/app_colors.dart';
 import 'package:fintech_app/common/app_dimens.dart';
+import 'package:fintech_app/features/stats/domain/models/graph_data_model.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
 class StatsBarChart extends StatefulWidget {
-  const StatsBarChart({super.key});
+  final GraphDataModel graphData;
+
+  const StatsBarChart({required this.graphData, super.key});
+
   final Color leftBarColor = AppColors.primary;
   final Color rightBarColor = AppColors.primaryDark;
-  // final Color avgColor = AppColors.contentColorOrange.avg(AppColors.contentColorRed);
+
   @override
   State<StatefulWidget> createState() => StatsBarChartState();
 }
@@ -17,24 +21,33 @@ class StatsBarChartState extends State<StatsBarChart> {
 
   late List<BarChartGroupData> rawBarGroups;
   late List<BarChartGroupData> showingBarGroups;
+  late double maxY;
 
   int touchedGroupIndex = -1;
 
   @override
   void initState() {
     super.initState();
-    final barGroup1 = makeGroupData(0, 5, 12);
-    final barGroup2 = makeGroupData(1, 16, 12);
-    final barGroup3 = makeGroupData(2, 18, 5);
-    final barGroup4 = makeGroupData(3, 20, 16);
-    final barGroup5 = makeGroupData(4, 17, 6);
-    final barGroup6 = makeGroupData(5, 19, 1.5);
-    final barGroup7 = makeGroupData(6, 10, 1.5);
+    _initializeBarGroups();
+  }
 
-    final items = [barGroup1, barGroup2, barGroup3, barGroup4, barGroup5, barGroup6, barGroup7];
+  void _initializeBarGroups() {
+    // Calculate maxY based on actual data
+    double maxValue = 0;
+    for (final item in widget.graphData.items) {
+      if (item.income > maxValue) maxValue = item.income;
+      if (item.expense > maxValue) maxValue = item.expense;
+    }
+    maxY = maxValue > 0 ? maxValue * 1.1 : 20; // Add 10% padding, or default to 20
+
+    // Create bar groups from graphData items
+    final items = <BarChartGroupData>[];
+    for (int i = 0; i < widget.graphData.items.length; i++) {
+      final item = widget.graphData.items[i];
+      items.add(makeGroupData(i, item.income, item.expense));
+    }
 
     rawBarGroups = items;
-
     showingBarGroups = rawBarGroups;
   }
 
@@ -44,13 +57,13 @@ class StatsBarChartState extends State<StatsBarChart> {
     return BarChart(
       BarChartData(
         alignment: BarChartAlignment.spaceBetween,
-        maxY: 20,
+        maxY: maxY,
         barTouchData: BarTouchData(
           touchTooltipData: BarTouchTooltipData(
             getTooltipColor: (_) => themeExt.textSecondary,
             getTooltipItem: (group, groupIndex, rod, rodIndex) {
               return BarTooltipItem(
-                rod.toY.toString(),
+                rod.toY.toStringAsFixed(2),
                 TextStyle(color: themeExt.background, fontWeight: FontWeight.bold, fontSize: 13),
               );
             },
@@ -84,23 +97,24 @@ class StatsBarChartState extends State<StatsBarChart> {
 
   Widget bottomTitles(double value, TitleMeta meta) {
     final themeExt = Theme.of(context).extension<AppColorTheme>()!;
-    final titles = <String>['Mn', 'Te', 'Wd', 'Tu', 'Fr', 'St', 'Su'];
+    final index = value.toInt();
+    final label = index < widget.graphData.items.length ? widget.graphData.items[index].label : '';
 
     final Widget text = Text(
-      titles[value.toInt()],
+      label,
       style: TextStyle(color: themeExt.textSecondary, fontWeight: FontWeight.bold, fontSize: 14),
     );
 
     return SideTitleWidget(meta: meta, space: AppDimens.spacingXs, child: text);
   }
 
-  BarChartGroupData makeGroupData(int x, double y1, double y2) {
+  BarChartGroupData makeGroupData(int x, double income, double expense) {
     return BarChartGroupData(
       barsSpace: AppDimens.spacingXs,
       x: x,
       barRods: [
-        BarChartRodData(toY: y1, color: widget.leftBarColor, width: width),
-        BarChartRodData(toY: y2, color: widget.rightBarColor, width: width),
+        BarChartRodData(toY: income, color: widget.leftBarColor, width: width),
+        BarChartRodData(toY: expense, color: widget.rightBarColor, width: width),
       ],
     );
   }

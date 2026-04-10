@@ -1,3 +1,4 @@
+import 'package:fintech_app/common/app_dimens.dart';
 import 'package:fintech_app/common/widgets/clickable_wrapper.dart';
 import 'package:flutter/material.dart';
 
@@ -102,12 +103,14 @@ class _StackedCardsState extends State<StackedCards> {
               borderRadius: item.borderRadius ?? BorderRadius.circular(widget.cardBorderRadius),
               child: Container(
                 decoration: bg,
-                // height: cardH,
+
+                height: cardH,
+                clipBehavior: Clip.hardEdge,
                 child: ClickableWrapper(
                   borderRadius: item.borderRadius ?? BorderRadius.circular(widget.cardBorderRadius),
                   padding: EdgeInsets.zero,
                   onTap: () => _bringToFront(item),
-                  child: item == _selected ? _buildExpandedContent(item) : _buildCollapsedHeader(item),
+                  child: item == _selected ? _buildExpandedContent(item, cardH) : _buildCollapsedHeader(item),
                 ),
               ),
             ),
@@ -120,80 +123,84 @@ class _StackedCardsState extends State<StackedCards> {
   /*───────── helpers ─────────*/
 
   Widget _buildCollapsedHeader(CardItem item) => Padding(
-    padding: const EdgeInsets.all(18),
-    // padding: const EdgeInsets.only(left: 18, right: 30, top: 20, bottom: 10),
+    padding: const EdgeInsets.all(AppDimens.spacingLg),
+    // padding: const EdgeInsets.only(left: AppDimens.spacingLg, right: 30, top: 20, bottom: AppDimens.spacingSm),
     child: DefaultTextStyle.merge(
       style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black87),
       child: item.title,
     ),
   );
 
-  Widget _buildExpandedContent(CardItem item) => Padding(
-    padding: const EdgeInsets.all(18),
-    child: Column(
-      // mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        DefaultTextStyle.merge(
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black87),
-          child: item.title,
-        ),
-        const SizedBox(height: 12),
-        Expanded(
-          child: DefaultTextStyle.merge(
-            style: const TextStyle(fontSize: 16, color: Colors.black54),
-            child: item.body,
+  Widget _buildExpandedContent(CardItem item, double height) => Padding(
+    padding: const EdgeInsets.all(AppDimens.spacingLg),
+    child: OverflowBox(
+      maxHeight: height - 36, // account for padding
+      alignment: Alignment.topLeft,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          DefaultTextStyle.merge(
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black87),
+            child: item.title,
           ),
-        ),
-        // const SizedBox(height: 60),
-      ],
+          const SizedBox(height: AppDimens.spacingMd),
+          Expanded(
+            child: DefaultTextStyle.merge(
+              style: const TextStyle(fontSize: 16, color: Colors.black54),
+              child: item.body,
+            ),
+          ),
+          // const SizedBox(height: 60),
+        ],
+      ),
     ),
   );
-  Widget _buildExpandedContent2(CardItem item) => Stack(
-    children: [
-      Positioned(
-        child: Padding(
-          padding: const EdgeInsets.all(18),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              DefaultTextStyle.merge(
-                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black87),
-                child: item.title,
-              ),
-              const SizedBox(height: 12),
-              Expanded(
-                child: DefaultTextStyle.merge(
-                  style: const TextStyle(fontSize: 16, color: Colors.black54),
-                  child: Container(color: Colors.blue, child: item.body),
-                ),
-              ),
-              const SizedBox(height: 60),
-            ],
-          ),
-        ),
-      ),
-      if (item.isButton == true)
-        Positioned(
-          right: 16,
-          bottom: 16,
-          child: ElevatedButton(
-            style:
-                item.buttonStyle ??
-                ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  foregroundColor: Colors.black87,
-                  textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  elevation: 2,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                ),
-            onPressed: item.onTap,
-            child: Text(item.buttonTitle ?? 'Learn More'),
-          ),
-        ),
-    ],
-  );
+
+  // Widget _buildExpandedContent2(CardItem item) => Stack(
+  //   children: [
+  //     Positioned(
+  //       child: Padding(
+  //         padding: const EdgeInsets.all(18),
+  //         child: Column(
+  //           mainAxisSize: MainAxisSize.min,
+  //           crossAxisAlignment: CrossAxisAlignment.start,
+  //           children: [
+  //             DefaultTextStyle.merge(
+  //               style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black87),
+  //               child: item.title,
+  //             ),
+  //             const SizedBox(height: 12),
+  //             Expanded(
+  //               child: DefaultTextStyle.merge(
+  //                 style: const TextStyle(fontSize: 16, color: Colors.black54),
+  //                 child: Container(color: Colors.blue, child: item.body),
+  //               ),
+  //             ),
+  //             const SizedBox(height: 60),
+  //           ],
+  //         ),
+  //       ),
+  //     ),
+  //     if (item.isButton == true)
+  //       Positioned(
+  //         right: 16,
+  //         bottom: 16,
+  //         child: ElevatedButton(
+  //           style:
+  //               item.buttonStyle ??
+  //               ElevatedButton.styleFrom(
+  //                 backgroundColor: Colors.white,
+  //                 foregroundColor: Colors.black87,
+  //                 textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+  //                 elevation: 2,
+  //                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+  //               ),
+  //           onPressed: item.onTap,
+  //           child: Text(item.buttonTitle ?? 'Learn More'),
+  //         ),
+  //       ),
+  //   ],
+  // );
 
   void _bringToFront(CardItem item) {
     setState(() {

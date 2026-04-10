@@ -1,3 +1,4 @@
+import 'package:fintech_app/common/app_dimens.dart';
 import 'package:fintech_app/common/widgets/section_title.dart';
 import 'package:fintech_app/common/widgets/transaction_tile.dart';
 import 'package:fintech_app/common/widgets/empty_state.dart';
@@ -28,7 +29,7 @@ class RecentPaymentsSection extends StatelessWidget {
           subtitle: 'View All',
           onTap: () {},
         ),
-        SizedBox(height: 16.0),
+        SizedBox(height: AppDimens.spacingMd),
         BlocBuilder<HomeBloc, HomeState>(
           buildWhen: (previous, current) =>
               (previous is HomeLoading) != (current is HomeLoading) &&

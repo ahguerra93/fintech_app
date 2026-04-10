@@ -9,7 +9,6 @@ class HomeActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final themeExt = Theme.of(context).extension<AppColorTheme>()!;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [

@@ -18,7 +18,7 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
     final themeExt = theme.extension<AppColorTheme>()!;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      padding: const EdgeInsets.symmetric(horizontal: AppDimens.spacingMd),
       child: AppBar(
         leading: _ProfileIcon(),
         title: Text.rich(
@@ -46,7 +46,7 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
 }
 
 class _ProfileIcon extends StatelessWidget {
-  const _ProfileIcon({super.key});
+  const _ProfileIcon();
 
   @override
   Widget build(BuildContext context) {

@@ -1,3 +1,4 @@
+import 'package:fintech_app/common/app_dimens.dart';
 import 'package:fintech_app/features/transfers/domain/models/transfer_model.dart';
 import 'package:fintech_app/features/transfers/presentation/bloc/transfer_bloc.dart';
 import 'package:flutter/material.dart';
@@ -53,12 +54,15 @@ class TransferFormSection extends StatelessWidget {
                         backgroundColor: theme.colorScheme.secondary,
                         child: Text(data.initials, style: theme.textTheme.headlineSmall?.copyWith(color: onPrimary)),
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: AppDimens.spacingMd),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppDimens.spacingLg,
+                          vertical: AppDimens.spacingXs,
+                        ),
                         decoration: BoxDecoration(
                           color: theme.scaffoldBackgroundColor,
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(AppDimens.radiusXl),
                         ),
                         child: DropdownButton<Recipient>(
                           value: data.selectedRecipient,
@@ -71,7 +75,7 @@ class TransferFormSection extends StatelessWidget {
                               child: Row(
                                 children: [
                                   Text(r.name, style: theme.textTheme.bodyLarge),
-                                  const SizedBox(width: 8),
+                                  const SizedBox(width: AppDimens.spacingSm),
                                   Text(
                                     r.cardNumber,
                                     style: theme.textTheme.bodyMedium?.copyWith(color: theme.hintColor),
@@ -99,12 +103,12 @@ class TransferFormSection extends StatelessWidget {
                   ),
                   child: Column(
                     children: [
-                      const SizedBox(height: 24),
+                      const SizedBox(height: AppDimens.spacingLg),
                       Text(
                         _formatAmount(amountDigits),
                         style: theme.textTheme.displayMedium?.copyWith(fontWeight: FontWeight.bold),
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: AppDimens.spacingMd),
                       Expanded(
                         child: NumericKeyboard(
                           onKeyboardTap: (v) => context.read<TransferBloc>().add(AppendDigit(v)),
@@ -114,9 +118,11 @@ class TransferFormSection extends StatelessWidget {
                       ),
                       SafeArea(
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                          padding: const EdgeInsets.symmetric(horizontal: AppDimens.spacingMd),
                           child: ElevatedButton(
-                            onPressed: () => context.read<TransferBloc>().add(PressedContinue()),
+                            onPressed: data.selectedRecipient == null || amountDigits.isEmpty
+                                ? null
+                                : () => context.read<TransferBloc>().add(PressedContinue()),
                             child: Center(
                               child: Text(
                                 'Transfer',

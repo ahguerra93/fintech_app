@@ -14,6 +14,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fintech_app/features/stats/presentation/bloc/graph_data_bloc/graph_data_bloc.dart';
 import 'package:fintech_app/features/stats/presentation/bloc/stats_transactions_bloc/stats_transactions_bloc.dart';
 import 'package:fintech_app/features/stats/domain/models/graph_data_model.dart';
+import 'package:fintech_app/features/stats/domain/models/graph_data_item.dart';
 import 'package:fintech_app/features/stats/domain/models/stats_transaction_model.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -161,7 +162,12 @@ class ChartContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeExt = Theme.of(context).extension<AppColorTheme>()!;
     final size = MediaQuery.of(context).size;
-    // Dummy values for MoneyLabel, replace with real data if available
+
+    // Calculate totals from items
+    final totalIncome = graphData.items.fold<double>(0.0, (sum, item) => sum + item.income);
+    final totalExpense = graphData.items.fold<double>(0.0, (sum, item) => sum + item.expense);
+    final netAmount = totalIncome - totalExpense;
+
     return Container(
       decoration: BoxDecoration(
         color: themeExt.mutedSurfaceAccent,
@@ -176,21 +182,12 @@ class ChartContainer extends StatelessWidget {
             spacing: AppDimens.spacingXs,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              MoneyLabel(
-                label: 'Income',
-                value: graphData.values.isNotEmpty ? graphData.values.reduce((a, b) => a > b ? a : b) : 0,
-              ),
-              MoneyLabel(
-                label: 'Expenses',
-                value: graphData.values.isNotEmpty ? graphData.values.reduce((a, b) => a < b ? a : b) : 0,
-              ),
-              MoneyLabel(
-                label: 'Net',
-                value: graphData.values.isNotEmpty ? graphData.values.reduce((a, b) => a + b) : 0,
-              ),
+              MoneyLabel(label: 'Income', value: totalIncome),
+              MoneyLabel(label: 'Expenses', value: totalExpense),
+              MoneyLabel(label: 'Net', value: netAmount),
             ],
           ),
-          SizedBox(height: size.height * 0.20, child: StatsBarChart()),
+          SizedBox(height: size.height * 0.20, child: StatsBarChart(graphData: graphData)),
         ],
       ),
     );
@@ -316,7 +313,7 @@ class _PaginationDot extends StatelessWidget {
       height: 8,
       decoration: BoxDecoration(
         color: isActive ? themeExt.primary : themeExt.primary.withValues(alpha: 0.4),
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: BorderRadius.circular(AppDimens.radiusSm),
       ),
     );
   }
@@ -390,8 +387,10 @@ class _GraphSection extends StatelessWidget {
   const _GraphSection();
 
   static final GraphDataModel _dummyGraphData = GraphDataModel(
-    labels: List.filled(7, 'Loading'),
-    values: List.filled(7, 500.0),
+    items: List.filled(
+      7,
+      const GraphDataItem(label: 'Loading', expense: 500.0, income: 500.0),
+    ),
   );
 
   @override

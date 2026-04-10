@@ -200,7 +200,7 @@ class _CardsSection extends StatelessWidget {
   final AppColorTheme themeExt;
 
   static final List<CardModel> _dummyCards = List.filled(
-    3,
+    1,
     CardModel(cardNumber: '**** **** **** 1234', balance: 5230.75, type: CardType.debit),
   );
 
@@ -225,6 +225,11 @@ class _CardsSection extends StatelessWidget {
             key: Key('cards_section'),
             enabled: loading,
             enableSwitchAnimation: true,
+            // ignoreContainers: true,
+            ignorePointers: true,
+            justifyMultiLineText: true,
+            containersColor: theme.colorScheme.secondary,
+
             child: RepaintBoundary(
               child: cards.isEmpty
                   ? EmptyStateWidget(

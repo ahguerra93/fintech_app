@@ -3,6 +3,7 @@ import 'package:fintech_app/features/transfers/presentation/sections/transfer_co
 import 'package:fintech_app/features/transfers/presentation/sections/transfer_form_section.dart';
 import 'package:fintech_app/features/transfers/presentation/sections/transfer_success_section.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class TransferPage extends StatelessWidget {
@@ -14,7 +15,9 @@ class TransferPage extends StatelessWidget {
       create: (_) => TransferBloc(),
       child: BlocBuilder<TransferBloc, TransferState>(
         builder: (context, state) {
-          return Container(
+          return AnnotatedRegion<SystemUiOverlayStyle>(
+            value: SystemUiOverlayStyle.light,
+            child: Container(
             color: Theme.of(context).primaryColor,
             height: double.infinity,
             child: AnimatedSwitcher(
@@ -26,6 +29,7 @@ class TransferPage extends StatelessWidget {
                 TransferSuccess(:final data) => TransferSuccessSection(data: data),
                 TransferFailure() => const TransferFormSection(),
               },
+            ),
             ),
           );
         },

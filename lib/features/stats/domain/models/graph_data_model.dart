@@ -1,10 +1,11 @@
+import 'package:fintech_app/features/stats/domain/models/graph_data_item.dart';
+
 class GraphDataModel {
-  final List<double> values;
-  final List<String> labels;
+  final List<GraphDataItem> items;
 
-  const GraphDataModel({required this.values, required this.labels});
+  const GraphDataModel({required this.items});
 
-  GraphDataModel copyWith({List<double>? values, List<String>? labels}) {
-    return GraphDataModel(values: values ?? this.values, labels: labels ?? this.labels);
+  GraphDataModel copyWith({List<GraphDataItem>? items}) {
+    return GraphDataModel(items: items ?? this.items);
   }
 }

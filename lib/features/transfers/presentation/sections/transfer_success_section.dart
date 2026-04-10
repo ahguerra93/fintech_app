@@ -1,3 +1,4 @@
+import 'package:fintech_app/common/app_dimens.dart';
 import 'package:fintech_app/common/app_formatters.dart';
 import 'package:fintech_app/features/transfers/domain/models/transfer_model.dart';
 import 'package:flutter/material.dart';
@@ -34,9 +35,9 @@ class TransferSuccessSection extends StatelessWidget {
                 'Transfer Successful!',
                 style: theme.textTheme.headlineMedium?.copyWith(color: theme.colorScheme.onPrimary),
               ),
-              const SizedBox(height: 16.0),
+              const SizedBox(height: AppDimens.spacingMd),
               Icon(Icons.check_circle_rounded, color: theme.colorScheme.secondary, size: 120),
-              const SizedBox(height: 32),
+              const SizedBox(height: AppDimens.spacingXl),
               Text(
                 '\$${AppFormatters.amount(data.amount)}',
                 style: theme.textTheme.displayMedium?.copyWith(
@@ -44,7 +45,7 @@ class TransferSuccessSection extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 16.0),
+              const SizedBox(height: AppDimens.spacingMd),
               Text(
                 'Transferred to:',
                 style: theme.textTheme.titleSmall?.copyWith(
@@ -52,13 +53,13 @@ class TransferSuccessSection extends StatelessWidget {
                   fontWeight: FontWeight.w300,
                 ),
               ),
-              const SizedBox(height: 8.0),
+              const SizedBox(height: AppDimens.spacingSm),
               Container(
-                margin: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 32.0),
-                padding: const EdgeInsets.all(16.0),
+                margin: const EdgeInsets.symmetric(vertical: AppDimens.spacingMd, horizontal: AppDimens.spacingXl),
+                padding: const EdgeInsets.all(AppDimens.spacingMd),
                 decoration: BoxDecoration(
                   // color: theme.colorScheme.secondary,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(AppDimens.radiusLg),
                   border: Border.all(color: theme.colorScheme.onPrimary, width: 2),
                 ),
                 child: Row(

@@ -89,9 +89,9 @@ class _NumericKeyboardState extends State<NumericKeyboard> {
 
   Widget _calcButton(String value) {
     return Container(
-      // padding: const EdgeInsets.all(10),
+      // padding: const EdgeInsets.all(AppDimens.spacingSm),
       alignment: Alignment.center,
-      decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: Colors.grey[200]),
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(AppDimens.radiusLg), color: Colors.grey[200]),
       width: 80,
       height: 50,
       child: ClickableWrapper(
